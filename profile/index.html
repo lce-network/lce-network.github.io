@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile | LCE Network</title>
+<link rel="icon" href="/assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #0a0c10;
+  --surface: rgba(255,255,255,0.04);
+  --surface2:rgba(255,255,255,0.07);
+  --border:  rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text:    #e8eaf0;
+  --muted:   #7a8090;
+  --accent:  #4fc3f7;
+  --accent2: #81c784;
+  --gold:    #ffd54f;
+  --red:     #ef5350;
+  --nav-h:   56px;
+}
+
+html, body { min-height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.panorama-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.panorama-track {
+  display: flex;
+  height: 100%;
+  animation: panBg 80s linear infinite;
+  will-change: transform;
+}
+
+.panorama-img {
+  height: 100%;
+  width: auto;
+  min-width: 100vw;
+  object-fit: cover;
+  flex-shrink: 0;
+  filter: blur(3px) brightness(0.38) saturate(0.7);
+  transform: scale(1.04);
+}
+
+@keyframes panBg {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.panorama-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(10,12,16,0.3) 0%, rgba(10,12,16,0.1) 40%, rgba(10,12,16,0.55) 100%);
+}
+
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: rgba(10,12,16,0.85);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 32px;
+  z-index: 100;
+}
+
+.nav-logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.nav-logo img { width: 28px; height: 28px; object-fit: contain; }
+.nav-logo-text {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+}
+
+.nav-links { display: flex; gap: 4px; flex: 1; }
+
+.nav-link {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 6px 14px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav-link:hover { color: var(--text); background: var(--surface); }
+.nav-link.active { color: var(--accent); }
+
+.nav-user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+
+.nav-avatar {
+  width: 32px; height: 32px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.nav-gamertag { font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.9rem; letter-spacing: 0.04em; }
+.nav-gs { font-size: 0.78rem; color: var(--gold); font-weight: 500; }
+
+.page {
+  position: relative;
+  z-index: 1;
+  padding-top: calc(var(--nav-h) + 32px);
+  padding-bottom: 80px;
+  min-height: 100vh;
+}
+
+.profile-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.panel {
+  background: rgba(10,12,16,0.72);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.profile-banner {
+  height: 120px;
+  background: linear-gradient(135deg, #0d1f2d 0%, #0a2a1a 100%);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.profile-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/assets/images/panorama.png') center/cover no-repeat;
+  opacity: 0.2;
+  filter: blur(2px);
+}
+
+.profile-identity {
+  padding: 0 24px 24px;
+  position: relative;
+}
+
+.profile-avatar-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: -38px;
+  margin-bottom: 14px;
+}
+
+.profile-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.profile-avatar-img {
+  width: 76px;
+  height: 76px;
+  border-radius: 8px;
+  border: 3px solid var(--bg);
+  background: var(--surface2);
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-edit-btn {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.avatar-edit-btn:hover { opacity: 0.85; }
+.avatar-edit-btn svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+.profile-role-badge {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 12px;
+  border-radius: 3px;
+  margin-bottom: 4px;
+}
+
+.role-user     { background: rgba(255,255,255,0.07); color: var(--muted); border: 1px solid rgba(255,255,255,0.1); }
+.role-moderator{ background: rgba(129,199,132,0.12); color: var(--accent2); border: 1px solid rgba(129,199,132,0.2); }
+.role-admin    { background: rgba(255,213,79,0.12);  color: var(--gold);   border: 1px solid rgba(255,213,79,0.2); }
+
+.profile-gamertag {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  margin-bottom: 3px;
+}
+
+.profile-xuid {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+.profile-bio {
+  font-size: 0.88rem;
+  color: #cdd0d8;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  min-height: 1.4em;
+}
+
+.profile-bio.editable { cursor: pointer; }
+.profile-bio.editable:hover { color: var(--text); }
+.profile-bio-placeholder { color: var(--muted); font-style: italic; }
+
+.bio-edit-wrap { margin-bottom: 14px; }
+
+.bio-textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 12px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  resize: vertical;
+  min-height: 72px;
+  outline: none;
+  transition: border-color 0.15s;
+  line-height: 1.5;
+}
+
+.bio-textarea:focus { border-color: var(--border2); }
+
+.bio-edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 7px;
+}
+
+.bio-chars { font-size: 0.72rem; color: var(--muted); margin-left: auto; }
+
+.btn-sm {
+  border: none;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn-sm:hover { opacity: 0.82; }
+.btn-sm:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-sm.primary   { background: var(--accent); color: #000; }
+.btn-sm.ghost     { background: var(--surface); color: var(--muted); border: 1px solid var(--border2); }
+.btn-sm.danger    { background: rgba(239,83,80,0.15); color: var(--red); border: 1px solid rgba(239,83,80,0.25); }
+.btn-sm.add-friend{ background: rgba(79,195,247,0.15); color: var(--accent); border: 1px solid rgba(79,195,247,0.25); }
+.btn-sm.friends   { background: rgba(129,199,132,0.1); color: var(--accent2); border: 1px solid rgba(129,199,132,0.2); cursor: default; pointer-events: none; }
+.btn-sm.pending   { background: var(--surface); color: var(--muted); border: 1px solid var(--border2); opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+
+.profile-stats-row {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+.profile-stat {
+  flex: 1;
+  text-align: center;
+  padding: 14px 8px;
+  border-right: 1px solid var(--border);
+}
+
+.profile-stat:last-child { border-right: none; }
+
+.profile-stat-val {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.profile-stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.gs-bar-wrap { margin: 4px 0 0; }
+
+.gs-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.73rem;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+
+.gs-bar-label span:last-child { color: var(--gold); font-weight: 600; }
+
+.gs-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.gs-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), #ffb300);
+  border-radius: 2px;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1px;
+  background: var(--border);
+}
+
+.ach-card {
+  background: rgba(10,12,16,0.72);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 0.12s;
+}
+
+.ach-card:hover { background: rgba(255,255,255,0.03); }
+
+.ach-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 5px;
+  background: rgba(255,213,79,0.08);
+  border: 1px solid rgba(255,213,79,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.1rem;
+}
+
+.ach-info { flex: 1; min-width: 0; }
+
+.ach-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ach-desc {
+  font-size: 0.73rem;
+  color: var(--muted);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ach-gs {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.ach-gs span { font-size: 0.7rem; font-weight: 400; color: var(--muted); }
+
+.empty-state {
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.spinner-wrap { padding: 40px; text-align: center; }
+
+.spinner {
+  width: 22px; height: 22px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.toast-lcen {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: rgba(13,16,24,0.95);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 500;
+  padding: 9px 20px;
+  border-radius: 6px;
+  z-index: 500;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+
+.toast-lcen.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 640px) {
+  .profile-stats-row { flex-wrap: wrap; }
+  .profile-stat { flex: 1 1 50%; }
+  .profile-stat:nth-child(2) { border-right: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="panorama-wrap">
+  <div class="panorama-track" id="panoramaTrack">
+    <img src="/assets/images/panorama.png" alt="" class="panorama-img" id="panoImg1">
+    <img src="/assets/images/panorama.png" alt="" class="panorama-img" id="panoImg2">
+  </div>
+  <div class="panorama-overlay"></div>
+</div>
+
+<div class="toast-lcen" id="lcenToast"></div>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/assets/logo.png" alt="LCEN">
+    <span class="nav-logo-text">LCE Network</span>
+  </a>
+  <div class="nav-links">
+        <a href="/" class="nav-link"><i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Home</a>
+    <a href="/download/" class="nav-link"><i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Download</a>
+    <a href="/dashboard/" class="nav-link">Dashboard</a>
+    <a href="/messages/" class="nav-link">Messages</a>
+    <a href="/profile/" class="nav-link active">My Profile</a>
+    <a href="/friends/" class="nav-link">My Friends</a>
+  </div>
+  <div class="nav-user" id="navUser" style="display:none">
+    <div class="nav-avatar">
+      <img id="navAvatarImg" src="" alt="">
+    </div>
+    <div>
+      <div class="nav-gamertag" id="navGamertag"></div>
+      <div class="nav-gs" id="navGs"></div>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="profile-wrap" id="profileWrap">
+    <div class="spinner-wrap"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<script src="/assets/app.js"></script>
+<script>
+const API_BASE = "https://network-server-7kuc.onrender.com";
+
+function tok()  { return localStorage.getItem("lcen_token"); }
+function prof() { try { return JSON.parse(localStorage.getItem("lcen_profile")); } catch { return null; } }
+function avUrl(xuid) { return `${API_BASE}/avatar/${xuid}`; }
+
+function toast(msg) {
+  const t = document.getElementById("lcenToast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...opts,
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${tok()}`, ...(opts.headers || {}) },
+  });
+  return res.json();
+}
+
+function buildNavBar(profile) {
+  const nu = document.getElementById("navUser");
+  if (!profile) { nu.style.display = "none"; return; }
+  nu.style.display = "";
+  document.getElementById("navAvatarImg").src = avUrl(profile.xuid);
+  document.getElementById("navGamertag").textContent = profile.gamertag;
+  document.getElementById("navGs").textContent = `${profile.gamerscore || 0} G`;
+}
+
+function roleClass(role) {
+  return { admin: "role-admin", moderator: "role-moderator" }[role] || "role-user";
+}
+
+function friendBtnHTML(xuid, friendData) {
+  const me = prof();
+  if (!me || me.xuid === xuid) return "";
+  const isFriend  = friendData?.friends?.includes(xuid);
+  const isPending = friendData?.sent?.includes(xuid);
+  if (isFriend)  return `<button class="btn-sm friends">Friends</button>`;
+  if (isPending) return `<button class="btn-sm pending">Pending</button>`;
+  return `<button class="btn-sm add-friend" id="addFriendBtn" data-xuid="${xuid}">Add Friend</button>`;
+}
+
+function renderProfile(profile, isOwn, friendData) {
+  const wrap = document.getElementById("profileWrap");
+  const gs = profile.gamerscore || 0;
+  const pct = Math.min(100, (gs % 1000) / 10);
+  const avatarSrc = avUrl(profile.xuid);
+
+  wrap.innerHTML = `
+    <div class="panel">
+      <div class="profile-banner"></div>
+      <div class="profile-identity">
+        <div class="profile-avatar-row">
+          <div class="profile-avatar-wrap" id="avatarWrap">
+            <img class="profile-avatar-img" id="profileAvatarImg" src="${avatarSrc}" alt="${profile.gamertag}" onerror="this.src=''">
+            ${isOwn ? `
+              <label class="avatar-edit-btn" for="avatarFileInput" title="Change avatar">
+                <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </label>
+              <input type="file" id="avatarFileInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;">
+            ` : ""}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding-bottom:2px;">
+            <span class="profile-role-badge ${roleClass(profile.role)}">${profile.role}</span>
+            ${friendBtnHTML(profile.xuid, friendData)}
+          </div>
+        </div>
+
+        <div class="profile-gamertag">${profile.gamertag}</div>
+        <div class="profile-xuid">XUID: ${profile.xuid}</div>
+
+        ${isOwn ? `
+          <div id="bioDisplay" class="profile-bio editable" title="Click to edit bio">
+            ${profile.bio ? profile.bio : '<span class="profile-bio-placeholder">Click to add a bio...</span>'}
+          </div>
+          <div id="bioEditWrap" class="bio-edit-wrap" style="display:none;">
+            <textarea class="bio-textarea" id="bioTextarea" maxlength="200" placeholder="Write something about yourself...">${profile.bio || ""}</textarea>
+            <div class="bio-edit-actions">
+              <button class="btn-sm primary" id="bioSaveBtn">Save</button>
+              <button class="btn-sm ghost" id="bioCancelBtn">Cancel</button>
+              <span class="bio-chars" id="bioChars">${(profile.bio || "").length}/200</span>
+            </div>
+          </div>
+        ` : `
+          <div class="profile-bio">${profile.bio || '<span class="profile-bio-placeholder">No bio set.</span>'}</div>
+        `}
+
+        <div class="gs-bar-wrap">
+          <div class="gs-bar-label"><span>Gamerscore</span><span id="gsVal">${gs.toLocaleString()} G</span></div>
+          <div class="gs-bar"><div class="gs-bar-fill" id="gsBarFill" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <div class="profile-stats-row">
+        <div class="profile-stat">
+          <div class="profile-stat-val">${gs.toLocaleString()}</div>
+          <div class="profile-stat-label">Gamerscore</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val">${profile.achievements.length}</div>
+          <div class="profile-stat-label">Achievements</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val">${(profile.friends || []).length}</div>
+          <div class="profile-stat-label">Friends</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val">${new Date(profile.createdAt).getFullYear()}</div>
+          <div class="profile-stat-label">Member Since</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Achievements</span>
+        <span style="font-size:0.76rem;color:var(--muted);">${profile.achievements.length} unlocked</span>
+      </div>
+      ${profile.achievements.length ? `
+        <div class="ach-grid">
+          ${profile.achievements.map(a => `
+            <div class="ach-card">
+              <div class="ach-badge">${a.icon || "★"}</div>
+              <div class="ach-info">
+                <div class="ach-name">${a.title}</div>
+                <div class="ach-desc">${a.description || ""}</div>
+              </div>
+              <div class="ach-gs">${a.gamerscore}<span>G</span></div>
+            </div>
+          `).join("")}
+        </div>
+      ` : `<div class="empty-state">No achievements unlocked yet.</div>`}
+    </div>
+  `;
+
+  setTimeout(() => { document.getElementById("gsBarFill").style.width = `${pct}%`; }, 200);
+
+  if (isOwn) {
+    const bioDisplay  = document.getElementById("bioDisplay");
+    const bioEditWrap = document.getElementById("bioEditWrap");
+    const bioTextarea = document.getElementById("bioTextarea");
+    const bioSaveBtn  = document.getElementById("bioSaveBtn");
+    const bioCancelBtn= document.getElementById("bioCancelBtn");
+    const bioChars    = document.getElementById("bioChars");
+
+    bioDisplay.addEventListener("click", () => {
+      bioDisplay.style.display = "none";
+      bioEditWrap.style.display = "block";
+      bioTextarea.focus();
+      bioTextarea.setSelectionRange(bioTextarea.value.length, bioTextarea.value.length);
+    });
+
+    bioTextarea.addEventListener("input", () => {
+      bioChars.textContent = `${bioTextarea.value.length}/200`;
+    });
+
+    bioCancelBtn.addEventListener("click", () => {
+      bioEditWrap.style.display = "none";
+      bioDisplay.style.display = "";
+      bioTextarea.value = profile.bio || "";
+    });
+
+    bioSaveBtn.addEventListener("click", async () => {
+      bioSaveBtn.disabled = true;
+      bioSaveBtn.textContent = "Saving...";
+      try {
+        const updated = await api("/me", { method: "PATCH", body: JSON.stringify({ bio: bioTextarea.value.trim() }) });
+        profile.bio = updated.bio;
+        localStorage.setItem("lcen_profile", JSON.stringify(updated));
+        bioDisplay.innerHTML = updated.bio || '<span class="profile-bio-placeholder">Click to add a bio...</span>';
+        bioEditWrap.style.display = "none";
+        bioDisplay.style.display = "";
+        toast("Bio updated");
+      } catch (e) {
+        toast(e.message || "Failed to save bio");
+      }
+      bioSaveBtn.disabled = false;
+      bioSaveBtn.textContent = "Save";
+    });
+
+    const avatarInput = document.getElementById("avatarFileInput");
+    if (avatarInput) {
+      avatarInput.addEventListener("change", async () => {
+        const file = avatarInput.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append("avatar", file);
+        try {
+          const res = await fetch(`${API_BASE}/me/avatar`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${tok()}` },
+            body: formData,
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Upload failed");
+          document.getElementById("profileAvatarImg").src = data.avatar + "?t=" + Date.now();
+          document.getElementById("navAvatarImg").src = data.avatar + "?t=" + Date.now();
+          const cached = prof();
+          if (cached) { cached.avatar = data.avatar; localStorage.setItem("lcen_profile", JSON.stringify(cached)); }
+          toast("Avatar updated");
+        } catch (e) { toast(e.message || "Upload failed"); }
+        avatarInput.value = "";
+      });
+    }
+  }
+
+  const addBtn = document.getElementById("addFriendBtn");
+  if (addBtn) {
+    addBtn.addEventListener("click", async () => {
+      addBtn.disabled = true;
+      addBtn.textContent = "...";
+      try {
+        await api(`/friends/request/${addBtn.dataset.xuid}`, { method: "POST" });
+        addBtn.textContent = "Pending";
+        addBtn.className = "btn-sm pending";
+        toast("Friend request sent!");
+      } catch (e) {
+        toast(e.message || "Failed to send request");
+        addBtn.disabled = false;
+        addBtn.textContent = "Add Friend";
+      }
+    });
+  }
+}
+
+async function init() {
+  const params = new URLSearchParams(location.search);
+  const q    = params.get("q");
+  const xuid = params.get("xuid");
+
+  let profile   = null;
+  let isOwn     = false;
+  let friendData = null;
+
+  try {
+    if (q) {
+      profile = await api(`/profile/${encodeURIComponent(q)}`);
+      const me = prof();
+      isOwn = !!tok() && !!me && me.gamertag.toLowerCase() === profile.gamertag.toLowerCase();
+    } else if (xuid) {
+      profile = await api(`/profile/xuid/${encodeURIComponent(xuid)}`);
+      const me = prof();
+      isOwn = !!tok() && !!me && me.xuid === profile.xuid;
+    } else {
+      if (!tok()) { location.href = "/login/"; return; }
+      profile = await api("/me");
+      localStorage.setItem("lcen_profile", JSON.stringify(profile));
+      isOwn = true;
+    }
+  } catch (e) {
+    document.getElementById("profileWrap").innerHTML = `<div class="panel"><div class="empty-state">${e.message || "Player not found."}</div></div>`;
+    return;
+  }
+
+  if (!isOwn && tok()) {
+    try {
+      friendData = await api("/friends/requests");
+      const fl = await api("/friends");
+      friendData.friends = fl.map(f => f.xuid);
+    } catch {}
+  }
+
+  buildNavBar(prof);
+  renderProfile(profile, isOwn, friendData);
+}
+
+(function setupPanorama() {
+  const track = document.getElementById("panoramaTrack");
+  const img1  = document.getElementById("panoImg1");
+
+  function onLoad() {
+    const w = img1.naturalWidth;
+    const h = img1.naturalHeight;
+    const scale = (window.innerHeight * 1.04) / h;
+    const displayW = w * scale;
+    img1.style.width = `${displayW}px`;
+    img1.style.minWidth = "unset";
+    document.getElementById("panoImg2").style.width = `${displayW}px`;
+    document.getElementById("panoImg2").style.minWidth = "unset";
+    const dur = displayW / 40;
+    const style = document.createElement("style");
+    style.textContent = `@keyframes panBg { 0% { transform: translateX(0); } 100% { transform: translateX(-${displayW}px); } }`;
+    document.head.appendChild(style);
+    track.style.animation = "none";
+    track.offsetHeight;
+    track.style.animation = `panBg ${dur}s linear infinite`;
+  }
+
+  if (img1.complete) onLoad();
+  else img1.addEventListener("load", onLoad);
+})();
+
+init();
+</script>
+</body>
+</html>

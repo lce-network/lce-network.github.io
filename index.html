@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LCE Network</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+    <link rel="icon" href="/assets/logo.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">
+        <img src="/assets/logo.png" alt="LCEN" />
+        <span class="nav-logo-text">LCE Network</span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link active">Home</a>
+        <a href="/download/" class="nav-link">Download</a>
+        <a href="/dashboard/" class="nav-link"><i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Dashboard</a>
+      </div>
+      <div class="nav-actions"></div>
+    </nav>
+
+    <div id="hero" class="hero"></div>
+
+    <div id="thumbnails" class="thumbnails"></div>
+
+    <main>
+      <div class="section page-fade" id="news">
+        <div class="section-header">
+          <h2 class="section-title">Latest News</h2>
+          <a href="#news" class="btn btn-ghost" style="font-size: 0.85rem"
+            >All News</a
+          >
+        </div>
+        <div class="news-grid" id="news-grid"></div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <img src="/assets/logo.png" alt="LCEN" />
+            <span class="footer-logo-text">LCEN</span>
+          </div>
+          <p class="footer-tagline">
+            The dedicated network for Minecraft Legacy Console Edition.
+          </p>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Network</div>
+          <a href="/">Home</a>
+          <a href="/download/">Download</a>
+          <a href="/profile/">Profile</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Account</div>
+          <a href="/login/">Sign In</a>
+          <a href="/register/">Register</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Legal</div>
+          <a href="#">Terms</a>
+          <a href="#">Privacy</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>2026 LCEN: Legacy Console Edition Network.</span>
+        <span>Not affiliated with Mojang, Microsoft or 4J Studios.</span>
+      </div>
+    </footer>
+
+    <script src="/assets/app.js"></script>
+    <script>
+      LCEN.initHome();
+    </script>
+  </body>
+</html>

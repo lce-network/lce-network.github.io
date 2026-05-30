@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LCE Network — Dashboard</title>
+<link rel="icon" href="/assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0a0c10;
+  --surface:  rgba(255,255,255,0.04);
+  --border:   rgba(255,255,255,0.08);
+  --border2:  rgba(255,255,255,0.14);
+  --text:     #e8eaf0;
+  --muted:    #7a8090;
+  --accent:   #4fc3f7;
+  --accent2:  #81c784;
+  --gold:     #ffd54f;
+  --red:      #ef5350;
+  --nav-h:    56px;
+}
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: rgba(10,12,16,0.85);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 32px;
+  z-index: 100;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.nav-logo img { width: 28px; height: 28px; object-fit: contain; }
+
+.nav-logo-text {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+
+.nav-links {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-link {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 6px 14px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav-link:hover { color: var(--text); background: var(--surface); }
+.nav-link.active { color: var(--accent); }
+
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.nav-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.nav-gamertag {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+
+.nav-gs {
+  font-size: 0.78rem;
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.panorama-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.panorama-track {
+  display: flex;
+  height: 100%;
+  animation: pan 80s linear infinite;
+  will-change: transform;
+}
+
+.panorama-img {
+  height: 100%;
+  width: auto;
+  min-width: 100vw;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+  filter: blur(3px) brightness(0.38) saturate(0.7);
+  transform: scale(1.04);
+}
+
+@keyframes pan {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.panorama-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10,12,16,0.3) 0%,
+    rgba(10,12,16,0.1) 40%,
+    rgba(10,12,16,0.5) 100%
+  );
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  padding-top: calc(var(--nav-h) + 28px);
+  padding-bottom: 60px;
+  min-height: 100vh;
+}
+
+.layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 260px 1fr 280px;
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+}
+
+.welcome-bar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  background: rgba(10,12,16,0.72);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  backdrop-filter: blur(12px);
+  animation: fadeUp 0.4s ease both;
+}
+
+.welcome-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.welcome-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 2px solid var(--border2);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.welcome-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.welcome-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.welcome-sub {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.welcome-stats {
+  display: flex;
+  gap: 28px;
+}
+
+.wstat {
+  text-align: center;
+}
+
+.wstat-val {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.wstat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.panel {
+  background: rgba(10,12,16,0.72);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+  animation: fadeUp 0.4s ease both;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.panel-action {
+  font-size: 0.76rem;
+  color: var(--accent);
+  font-weight: 500;
+  opacity: 0.8;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.panel-action:hover { opacity: 1; }
+
+.col-left { grid-column: 1; display: flex; flex-column: column; flex-direction: column; gap: 16px; }
+.col-mid  { grid-column: 2; display: flex; flex-direction: column; gap: 16px; }
+.col-right{ grid-column: 3; display: flex; flex-direction: column; gap: 16px; }
+
+.profile-card { }
+
+.profile-banner {
+  height: 72px;
+  background: linear-gradient(135deg, #0d1f2d 0%, #0a2a1a 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/assets/images/panorama.png') center/cover no-repeat;
+  opacity: 0.25;
+  filter: blur(2px);
+}
+
+.profile-body {
+  padding: 0 18px 16px;
+  position: relative;
+}
+
+.profile-avatar-wrap {
+  margin-top: -24px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.profile-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  border: 2px solid var(--bg);
+  background: var(--surface);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.profile-role {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 15px;
+  margin-top: 40px;
+  border-radius: 3px;
+  background: rgba(79,195,247,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(79,195,247,0.2);
+}
+
+.profile-gt {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.profile-bio {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.gs-bar-wrap {
+  margin-top: 12px;
+}
+
+.gs-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+
+.gs-bar-label span:last-child {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.gs-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.gs-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), #ffb300);
+  border-radius: 2px;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.friends-list { }
+
+.friend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.friend-item:last-child { border-bottom: none; }
+.friend-item:hover { background: rgba(255,255,255,0.03); }
+
+.friend-avatar-wrap { position: relative; flex-shrink: 0; }
+
+.friend-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.online-dot {
+  position: absolute;
+  bottom: -2px; right: -2px;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+}
+
+.online-dot.online  { background: var(--accent2); }
+.online-dot.offline { background: var(--muted); }
+
+.friend-info { flex: 1; min-width: 0; }
+
+.friend-gt {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friend-status {
+  font-size: 0.73rem;
+  color: var(--muted);
+}
+
+.friend-gs {
+  font-size: 0.75rem;
+  color: var(--gold);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.feed-panel { flex: 1; }
+
+.post-composer {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.composer-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: var(--surface);
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.composer-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.composer-input {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 12px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  resize: none;
+  outline: none;
+  transition: border-color 0.15s;
+  min-height: 40px;
+  max-height: 120px;
+}
+
+.composer-input::placeholder { color: var(--muted); }
+.composer-input:focus { border-color: var(--border2); }
+
+.composer-send {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.composer-send:hover { opacity: 0.85; }
+
+.feed-items { }
+
+.feed-item {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  animation: fadeUp 0.3s ease both;
+}
+
+.feed-item:last-child { border-bottom: none; }
+
+.feed-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  background: var(--surface);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.feed-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.feed-body { flex: 1; min-width: 0; }
+
+.feed-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.feed-gt {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+}
+
+.feed-type {
+  font-size: 0.72rem;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.feed-type.post       { background: rgba(255,255,255,0.07); color: var(--muted); }
+.feed-type.achievement{ background: rgba(255,213,79,0.12); color: var(--gold); }
+.feed-type.mod_release{ background: rgba(129,199,132,0.12); color: var(--accent2); }
+.feed-type.upload_clip{ background: rgba(79,195,247,0.12); color: var(--accent); }
+
+.feed-time {
+  font-size: 0.73rem;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.feed-text {
+  font-size: 0.88rem;
+  color: #cdd0d8;
+  line-height: 1.5;
+}
+
+.feed-image {
+  margin-top: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+  max-height: 220px;
+}
+
+.feed-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.feed-achievement {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255,213,79,0.06);
+  border: 1px solid rgba(255,213,79,0.15);
+  border-radius: 6px;
+}
+
+.ach-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: rgba(255,213,79,0.1);
+  border: 1px solid rgba(255,213,79,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  color: var(--gold);
+  font-weight: 700;
+  font-family: 'Barlow', sans-serif;
+}
+
+.ach-title {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.ach-gs {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.feed-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.feed-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 3px 0;
+  transition: color 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.feed-btn:hover { color: var(--text); }
+.feed-btn.liked { color: var(--accent); }
+
+.feed-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.dm-threads { }
+
+.dm-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.12s;
+  position: relative;
+}
+
+.dm-item:last-child { border-bottom: none; }
+.dm-item:hover { background: rgba(255,255,255,0.03); }
+.dm-item.active { background: rgba(79,195,247,0.06); }
+
+.dm-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  background: var(--surface);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.dm-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.dm-info { flex: 1; min-width: 0; }
+
+.dm-gt {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.dm-preview {
+  font-size: 0.76rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.dm-time {
+  font-size: 0.7rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.dm-unread {
+  position: absolute;
+  top: 10px; right: 18px;
+  width: 16px;
+  height: 16px;
+  background: var(--accent);
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dm-compose {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+}
+
+.dm-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dm-input {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 7px 11px;
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.84rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.dm-input::placeholder { color: var(--muted); }
+.dm-input:focus { border-color: var(--border2); }
+
+.dm-send {
+  background: rgba(79,195,247,0.15);
+  border: 1px solid rgba(79,195,247,0.25);
+  border-radius: 5px;
+  color: var(--accent);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: background 0.12s;
+  flex-shrink: 0;
+}
+
+.dm-send:hover { background: rgba(79,195,247,0.22); }
+
+.achievements-panel { }
+
+.ach-list { }
+
+.ach-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ach-row:last-child { border-bottom: none; }
+
+.ach-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 5px;
+  background: rgba(255,213,79,0.08);
+  border: 1px solid rgba(255,213,79,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.ach-info { flex: 1; min-width: 0; }
+
+.ach-name {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ach-desc {
+  font-size: 0.73rem;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.ach-pts {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.ach-pts span {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.requests-panel { }
+
+.req-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.req-item:last-child { border-bottom: none; }
+
+.req-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  background: var(--surface);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.req-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.req-name {
+  flex: 1;
+  min-width: 0;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.req-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.req-btn {
+  border: none;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.12s;
+  flex-shrink: 0;
+}
+
+.req-btn:hover { opacity: 0.75; }
+
+.req-btn.accept {
+  background: rgba(129,199,132,0.18);
+  color: var(--accent2);
+  border: 1px solid rgba(129,199,132,0.28);
+}
+
+.req-btn.decline {
+  background: rgba(239,83,80,0.12);
+  color: var(--red);
+  border: 1px solid rgba(239,83,80,0.2);
+}
+
+.req-btn svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.empty-state {
+  padding: 24px 18px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.loading-state {
+  padding: 28px 18px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin: 0 auto 10px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.col-left  { animation-delay: 0.05s; }
+.col-mid   { animation-delay: 0.1s; }
+.col-right { animation-delay: 0.15s; }
+
+.not-logged {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(10,12,16,0.92);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.not-logged-box {
+  background: rgba(20,24,32,0.95);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 40px 44px;
+  text-align: center;
+  max-width: 360px;
+}
+
+.not-logged-logo { width: 48px; margin: 0 auto 16px; display: block; }
+
+.not-logged-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.not-logged-sub {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.btn-row { display: flex; gap: 10px; justify-content: center; }
+
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 9px 22px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn-primary:hover { opacity: 0.85; }
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 9px 22px;
+  border-radius: 5px;
+  border: 1px solid var(--border2);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-secondary:hover { background: rgba(255,255,255,0.08); }
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 240px 1fr;
+    grid-template-rows: auto auto 1fr;
+  }
+  .welcome-bar { grid-column: 1 / -1; }
+  .col-left  { grid-column: 1; grid-row: 2; }
+  .col-mid   { grid-column: 2; grid-row: 2 / 4; }
+  .col-right { grid-column: 1; grid-row: 3; }
+}
+
+@media (max-width: 700px) {
+  .layout { grid-template-columns: 1fr; }
+  .welcome-stats { display: none; }
+  .col-left, .col-mid, .col-right { grid-column: 1; grid-row: auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="panorama-wrap">
+  <div class="panorama-track" id="panoramaTrack">
+    <img src="/assets/images/panorama.png" alt="" class="panorama-img" id="panoImg1">
+    <img src="/assets/images/panorama.png" alt="" class="panorama-img" id="panoImg2">
+  </div>
+  <div class="panorama-overlay"></div>
+</div>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/assets/logo.png" alt="LCEN">
+    <span class="nav-logo-text">LCE Network</span>
+  </a>
+  <div class="nav-links">
+    <a href="/" class="nav-link"><i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Home</a>
+    <a href="/download/" class="nav-link"><i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Download</a>
+    <a href="/dashboard/" class="nav-link active">Dashboard</a>
+    <a href="/messages/" class="nav-link">Messages</a>
+    <a href="/profile/" class="nav-link">My Profile</a>
+    <a href="/friends/" class="nav-link">My Friends</a>
+  </div>
+  <div class="nav-user" id="navUser" style="display:none">
+    <div class="nav-avatar">
+      <img id="navAvatarImg" src="" alt="">
+    </div>
+    <div>
+      <div class="nav-gamertag" id="navGamertag"></div>
+      <div class="nav-gs" id="navGs"></div>
+    </div>
+  </div>
+</nav>
+
+<div class="not-logged" id="notLogged">
+  <div class="not-logged-box">
+    <img src="/assets/logo.png" alt="LCEN" class="not-logged-logo">
+    <div class="not-logged-title">Sign in to continue</div>
+    <div class="not-logged-sub">Your dashboard is waiting. Sign in to see your feed, messages, and achievements.</div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="location.href='/login/'">Sign In</button>
+      <button class="btn-secondary" onclick="location.href='/register/'">Register</button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="dashPage" style="display:none">
+  <div class="layout">
+
+    <div class="welcome-bar" id="welcomeBar">
+      <div class="welcome-left">
+        <div class="welcome-avatar">
+          <img id="welcomeAvatar" src="" alt="">
+        </div>
+        <div>
+          <div class="welcome-name" id="welcomeName"></div>
+          <div class="welcome-sub" id="welcomeSub"></div>
+        </div>
+      </div>
+      <div class="welcome-stats">
+        <div class="wstat">
+          <div class="wstat-val" id="wsGs">0</div>
+          <div class="wstat-label">Gamerscore</div>
+        </div>
+        <div class="wstat">
+          <div class="wstat-val" id="wsAch">0</div>
+          <div class="wstat-label">Achievements</div>
+        </div>
+        <div class="wstat">
+          <div class="wstat-val" id="wsFriends">0</div>
+          <div class="wstat-label">Friends</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-left">
+      <div class="panel profile-card">
+        <div class="profile-banner"></div>
+        <div class="profile-body">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar">
+              <img id="profileAvatar" src="" alt="">
+            </div>
+            <span class="profile-role" id="profileRole">Player</span>
+          </div>
+          <div class="profile-gt" id="profileGt"></div>
+          <div class="profile-bio" id="profileBio"></div>
+          <div class="gs-bar-wrap">
+            <div class="gs-bar-label">
+              <span>Gamerscore</span>
+              <span id="gsVal">0 G</span>
+            </div>
+            <div class="gs-bar">
+              <div class="gs-bar-fill" id="gsBarFill" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Friends</span>
+          <a href="/friends/" class="panel-action">View All</a>
+        </div>
+        <div class="friends-list" id="friendsList">
+          <div class="loading-state"><div class="spinner"></div>Loading friends...</div>
+        </div>
+      </div>
+
+        <div class="panel requests-panel" id="requestsPanel" style="display:none">
+            <div class="panel-header">
+                <span class="panel-title">Friend Requests</span>
+            </div>
+            <div id="requestsList"></div>
+        </div>
+    </div>
+
+    <div class="col-mid">
+      <div class="panel feed-panel">
+        <div class="panel-header">
+          <span class="panel-title">Activity Feed</span>
+        </div>
+        <div class="post-composer">
+          <div class="composer-avatar">
+            <img id="composerAvatar" src="" alt="">
+          </div>
+          <textarea class="composer-input" id="composerInput" placeholder="Share something with your friends..." rows="1"></textarea>
+          <button class="composer-send" id="composerSend">Post</button>
+        </div>
+        <div class="feed-items" id="feedItems">
+          <div class="loading-state"><div class="spinner"></div>Loading feed...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="panel dm-threads">
+        <div class="panel-header">
+          <span class="panel-title">Messages</span>
+          <a href="/messages/" class="panel-action">Open</a>
+        </div>
+        <div id="dmList">
+          <div class="loading-state"><div class="spinner"></div>Loading messages...</div>
+        </div>
+        <div class="dm-compose" id="dmCompose" style="display:none">
+          <div class="dm-input-row">
+            <input class="dm-input" id="dmInput" placeholder="Send a message..." type="text">
+            <button class="dm-send" id="dmSendBtn">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel achievements-panel">
+        <div class="panel-header">
+          <span class="panel-title">Recent Achievements</span>
+          <a href="/profile/" class="panel-action">All</a>
+        </div>
+        <div class="ach-list" id="achList">
+          <div class="loading-state"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = "https://network-server-7kuc.onrender.com";
+
+function token() { return localStorage.getItem("lcen_token"); }
+function profile() { try { return JSON.parse(localStorage.getItem("lcen_profile")); } catch { return null; } }
+
+function avatarUrl(xuid) { return `${API}/avatar/${xuid}`; }
+
+function timeAgo(date) {
+  const d = typeof date === "string" ? new Date(date) : date;
+  const s = Math.floor((Date.now() - d) / 1000);
+  if (s < 60) return "just now";
+  if (s < 3600) return `${Math.floor(s/60)}m ago`;
+  if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+  return `${Math.floor(s/86400)}d ago`;
+}
+
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(`${API}${path}`, {
+    ...opts,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token()}`,
+      ...(opts.headers || {}),
+    },
+  });
+  return res.json();
+}
+
+function feedTypeLabel(type) {
+  const map = {
+    post: "Post",
+    achievement: "Achievement",
+    joined_server: "Joined",
+    download: "Download",
+    upload_skin: "Skin",
+    upload_world: "World",
+    upload_clip: "Clip",
+    mod_release: "Mod",
+  };
+  return map[type] || type;
+}
+
+function renderFeedItem(item) {
+  const el = document.createElement("div");
+  el.className = "feed-item";
+  el.dataset.id = item._id;
+
+  const liked = item.likes && item.likes.includes(profile()?.xuid);
+
+  let extra = "";
+  if (item.imageData) {
+    extra = `<div class="feed-image"><img src="${item.imageData}" alt=""></div>`;
+  } else if (item.type === "achievement" && item.meta) {
+    extra = `<div class="feed-achievement">
+      <div class="ach-icon">ACH</div>
+      <div>
+        <div class="ach-title">${item.meta.title || item.text}</div>
+        <div class="ach-gs">${item.meta.gamerscore || 0} Gamerscore</div>
+      </div>
+    </div>`;
+  }
+
+  el.innerHTML = `
+    <div class="feed-avatar">
+      <img src="${avatarUrl(item.author?.xuid || item.authorXuid)}" alt="" onerror="this.style.display='none'">
+    </div>
+    <div class="feed-body">
+      <div class="feed-meta">
+        <span class="feed-gt">${item.author?.gamertag || "Unknown"}</span>
+        <span class="feed-type ${item.type}">${feedTypeLabel(item.type)}</span>
+        <span class="feed-time">${timeAgo(item.createdAt)}</span>
+      </div>
+      ${item.text ? `<div class="feed-text">${item.text}</div>` : ""}
+      ${extra}
+      <div class="feed-actions">
+        <button class="feed-btn like-btn ${liked ? "liked" : ""}" data-id="${item._id}">
+          <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          ${item.likes ? item.likes.length : 0}
+        </button>
+      </div>
+    </div>
+  `;
+
+  el.querySelector(".like-btn").addEventListener("click", async function() {
+    const data = await apiFetch(`/activity/${item._id}/like`, { method: "POST" });
+    if (data.likes !== undefined) {
+      this.textContent = "";
+      this.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> ${data.likes}`;
+      this.classList.toggle("liked", data.liked);
+    }
+  });
+
+  return el;
+}
+
+function renderFriend(u) {
+  const online = (Date.now() - new Date(u.lastSeen)) < 5 * 60 * 1000;
+  const el = document.createElement("div");
+  el.className = "friend-item";
+  el.innerHTML = `
+    <div class="friend-avatar-wrap">
+      <div class="friend-avatar">
+        <img src="${avatarUrl(u.xuid)}" alt="" onerror="this.style.display='none'">
+      </div>
+      <span class="online-dot ${online ? "online" : "offline"}"></span>
+    </div>
+    <div class="friend-info">
+      <div class="friend-gt">${u.gamertag}</div>
+      <div class="friend-status">${online ? "Online" : "Offline"}</div>
+    </div>
+    <div class="friend-gs">${u.gamerscore || 0}</div>
+  `;
+  return el;
+}
+
+function renderDmItem(t, activeXuid) {
+  const el = document.createElement("div");
+  el.className = `dm-item${t.with?.xuid === activeXuid ? " active" : ""}`;
+  el.dataset.xuid = t.with?.xuid || "";
+
+  const preview = t.lastMessage
+    ? `${t.lastMessage.fromMe ? "You: " : ""}${t.lastMessage.text}`
+    : "No messages yet";
+
+  el.innerHTML = `
+    <div class="dm-avatar">
+      <img src="${avatarUrl(t.with?.xuid || "")}" alt="" onerror="this.style.display='none'">
+    </div>
+    <div class="dm-info">
+      <div class="dm-gt">${t.with?.gamertag || "Unknown"}</div>
+      <div class="dm-preview">${preview}</div>
+    </div>
+    <div class="dm-time">${t.lastMessage ? timeAgo(t.lastMessage.sentAt) : ""}</div>
+    ${t.unread > 0 ? `<span class="dm-unread">${t.unread}</span>` : ""}
+  `;
+
+  el.addEventListener("click", () => {
+    const xuid = el.dataset.xuid;
+    if (!xuid) return;
+    document.querySelectorAll(".dm-item").forEach(i => i.classList.remove("active"));
+    el.classList.add("active");
+    document.getElementById("dmCompose").style.display = "";
+    document.getElementById("dmInput").dataset.xuid = xuid;
+    document.getElementById("dmInput").placeholder = `Message ${t.with?.gamertag || ""}...`;
+  });
+
+  return el;
+}
+
+function renderAch(a) {
+  const el = document.createElement("div");
+  el.className = "ach-row";
+  el.innerHTML = `
+    <div class="ach-badge">${(a.title || "ACH").slice(0,6)}</div>
+    <div class="ach-info">
+      <div class="ach-name">${a.title || "Achievement"}</div>
+      <div class="ach-desc">${a.description || ""}</div>
+    </div>
+    <div class="ach-pts">${a.gamerscore}<span>G</span></div>
+  `;
+  return el;
+}
+
+function renderRequest(xuid, onAccept, onDecline) {
+  const el = document.createElement("div");
+  el.className = "req-item";
+  el.innerHTML = `
+    <div class="req-avatar">
+      <img src="${avatarUrl(xuid)}" alt="" onerror="this.style.display='none'">
+    </div>
+    <div class="req-name" id="reqName_${xuid}">${xuid}</div>
+    <div class="req-actions">
+      <button class="req-btn accept" title="Accept">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </button>
+      <button class="req-btn decline" title="Decline">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+  `;
+  el.querySelector(".accept").addEventListener("click", () => onAccept(xuid, el));
+  el.querySelector(".decline").addEventListener("click", () => onDecline(xuid, el));
+
+  apiFetch(`/profile/xuid/${xuid}`).then(u => {
+    if (u.gamertag) el.querySelector(`#reqName_${xuid}`).textContent = u.gamertag;
+  });
+
+  return el;
+}
+
+let dmActiveXuid = null;
+
+async function loadDashboard() {
+  const p = profile();
+  if (!p || !token()) {
+    document.getElementById("notLogged").style.display = "";
+    return;
+  }
+
+  document.getElementById("notLogged").style.display = "none";
+  document.getElementById("dashPage").style.display = "";
+
+  const fresh = await apiFetch("/me");
+
+  const gt = fresh.gamertag || p.gamertag;
+  const xuid = fresh.xuid || p.xuid;
+  const gs = fresh.gamerscore || 0;
+  const ach = (fresh.achievements || []).length;
+  const fl = (fresh.friends || []).length;
+  const role = fresh.role || "user";
+  const bio = fresh.bio || "";
+  const avUrl = avatarUrl(xuid);
+
+  document.getElementById("navUser").style.display = "";
+  document.getElementById("navAvatarImg").src = avUrl;
+  document.getElementById("navGamertag").textContent = gt;
+  document.getElementById("navGs").textContent = `${gs} G`;
+
+  document.getElementById("welcomeAvatar").src = avUrl;
+  document.getElementById("welcomeName").textContent = `Welcome back, ${gt}`;
+  document.getElementById("welcomeSub").textContent = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+  document.getElementById("wsGs").textContent = gs.toLocaleString();
+  document.getElementById("wsAch").textContent = ach;
+  document.getElementById("wsFriends").textContent = fl;
+
+  document.getElementById("profileAvatar").src = avUrl;
+  document.getElementById("profileGt").textContent = gt;
+  document.getElementById("profileBio").textContent = bio || "No bio set.";
+  document.getElementById("profileRole").textContent = role.charAt(0).toUpperCase() + role.slice(1);
+  document.getElementById("gsVal").textContent = `${gs.toLocaleString()} G`;
+
+  const pct = Math.min(100, (gs % 1000) / 10);
+  setTimeout(() => { document.getElementById("gsBarFill").style.width = `${pct}%`; }, 200);
+
+  document.getElementById("composerAvatar").src = avUrl;
+
+  const achList = document.getElementById("achList");
+  const achs = (fresh.achievements || []).slice(-5).reverse();
+  if (achs.length) {
+    achList.innerHTML = "";
+    achs.forEach(a => achList.appendChild(renderAch(a)));
+  } else {
+    achList.innerHTML = `<div class="empty-state">No achievements yet.</div>`;
+  }
+
+  const reqData = await apiFetch("/friends/requests");
+  const received = reqData.received || [];
+  const reqPanel = document.getElementById("requestsPanel");
+  const reqList = document.getElementById("requestsList");
+  if (received.length > 0) {
+    reqPanel.style.display = "";
+    reqList.innerHTML = "";
+    received.forEach(xuid => {
+      reqList.appendChild(renderRequest(xuid,
+        async (x, el) => {
+          await apiFetch(`/friends/accept/${x}`, { method: "POST" });
+          el.remove();
+          if (!reqList.children.length) reqPanel.style.display = "none";
+        },
+        async (x, el) => {
+          await apiFetch(`/friends/decline/${x}`, { method: "POST" });
+          el.remove();
+          if (!reqList.children.length) reqPanel.style.display = "none";
+        }
+      ));
+    });
+  } else {
+    reqPanel.style.display = "none";
+  }
+
+  const friendsData = await apiFetch("/friends");
+  const friendsList = document.getElementById("friendsList");
+  friendsList.innerHTML = "";
+  if (Array.isArray(friendsData) && friendsData.length) {
+    const sorted = friendsData.sort((a, b) => {
+      const aOnline = (Date.now() - new Date(a.lastSeen)) < 5 * 60 * 1000;
+      const bOnline = (Date.now() - new Date(b.lastSeen)) < 5 * 60 * 1000;
+      return (bOnline ? 1 : 0) - (aOnline ? 1 : 0);
+    });
+    sorted.slice(0, 8).forEach(u => friendsList.appendChild(renderFriend(u)));
+    if (sorted.length > 8) {
+      const more = document.createElement("div");
+      more.className = "empty-state";
+      more.textContent = `+${sorted.length - 8} more friends`;
+      friendsList.appendChild(more);
+    }
+  } else {
+    friendsList.innerHTML = `<div class="empty-state">No friends added yet.</div>`;
+  }
+
+  const feedData = await apiFetch("/feed?limit=20");
+  const feedItems = document.getElementById("feedItems");
+  feedItems.innerHTML = "";
+  const items = feedData.items || [];
+  if (items.length) {
+    items.forEach(item => feedItems.appendChild(renderFeedItem(item)));
+  } else {
+    feedItems.innerHTML = `<div class="empty-state">Nothing in your feed yet. Add some friends!</div>`;
+  }
+
+  const dmsData = await apiFetch("/dms");
+  const dmList = document.getElementById("dmList");
+  dmList.innerHTML = "";
+  if (Array.isArray(dmsData) && dmsData.length) {
+    dmsData.slice(0, 6).forEach(t => dmList.appendChild(renderDmItem(t, dmActiveXuid)));
+  } else {
+    dmList.innerHTML = `<div class="empty-state">No messages yet.</div>`;
+  }
+}
+
+document.getElementById("composerSend").addEventListener("click", async () => {
+  const input = document.getElementById("composerInput");
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  const data = await apiFetch("/activity", {
+    method: "POST",
+    body: JSON.stringify({ type: "post", text }),
+  });
+  if (data._id) {
+    const feedItems = document.getElementById("feedItems");
+    const el = renderFeedItem(data);
+    feedItems.prepend(el);
+  }
+});
+
+document.getElementById("composerInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    document.getElementById("composerSend").click();
+  }
+});
+
+document.getElementById("dmSendBtn").addEventListener("click", async () => {
+  const input = document.getElementById("dmInput");
+  const xuid = input.dataset.xuid;
+  const text = input.value.trim();
+  if (!xuid || !text) return;
+  input.value = "";
+  await apiFetch(`/dms/${xuid}`, {
+    method: "POST",
+    body: JSON.stringify({ text }),
+  });
+});
+
+document.getElementById("dmInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    document.getElementById("dmSendBtn").click();
+  }
+});
+
+(function setupPanorama() {
+  const track = document.getElementById("panoramaTrack");
+  const img1  = document.getElementById("panoImg1");
+
+  function onLoad() {
+    const w = img1.naturalWidth;
+    const h = img1.naturalHeight;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const scale = (vh * 1.04) / h;
+    const displayW = w * scale;
+
+    img1.style.width = `${displayW}px`;
+    img1.style.minWidth = "unset";
+    document.getElementById("panoImg2").style.width = `${displayW}px`;
+    document.getElementById("panoImg2").style.minWidth = "unset";
+
+    const duration = displayW / 40;
+    track.style.animation = `pan ${duration}s linear infinite`;
+
+    const style = document.createElement("style");
+    style.textContent = `@keyframes pan { 0% { transform: translateX(0); } 100% { transform: translateX(-${displayW}px); } }`;
+    document.head.appendChild(style);
+    track.style.animation = "none";
+    track.offsetHeight;
+    track.style.animation = `pan ${duration}s linear infinite`;
+  }
+
+  if (img1.complete) { onLoad(); }
+  else { img1.addEventListener("load", onLoad); }
+})();
+
+loadDashboard();
+</script>
+</body>
+</html>

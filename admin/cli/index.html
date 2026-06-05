@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LCEN Admin Console</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: #0c0c0c;
+  color: #cccccc;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  line-height: 1.2;
+  overflow: hidden;
+}
+
+#terminal {
+  width: 100%; height: 100%;
+  padding: 4px 6px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  cursor: text;
+  word-break: break-all;
+}
+
+#terminal::-webkit-scrollbar { width: 0; }
+
+.line {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-all;
+  min-height: 1.2em;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.c-black   { color: #0c0c0c; }
+.c-red     { color: #c50f1f; }
+.c-green   { color: #13a10e; }
+.c-yellow  { color: #c19c00; }
+.c-blue    { color: #0037da; }
+.c-magenta { color: #881798; }
+.c-cyan    { color: #3a96dd; }
+.c-white   { color: #cccccc; }
+.c-bblack  { color: #767676; }
+.c-bred    { color: #e74856; }
+.c-bgreen  { color: #16c60c; }
+.c-byellow { color: #f9f1a5; }
+.c-bblue   { color: #3b78ff; }
+.c-bmagenta{ color: #b4009e; }
+.c-bcyan   { color: #61d6d6; }
+.c-bwhite  { color: #f2f2f2; }
+.bold      { font-weight: bold; }
+
+#input-line {
+  display: flex;
+  align-items: flex-start;
+  white-space: pre;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  line-height: 1.2;
+  min-height: 1.2em;
+}
+
+#input-prompt {
+  color: #cccccc;
+  white-space: pre;
+  flex-shrink: 0;
+}
+
+#input-before { color: #cccccc; white-space: pre; }
+#input-cursor {
+  display: inline-block;
+  min-width: 0.6em;
+  background: #cccccc;
+  color: #0c0c0c;
+  white-space: pre;
+}
+#input-after  { color: #cccccc; white-space: pre; }
+</style>
+</head>
+<body>
+<div id="terminal">
+  <div id="output"></div>
+  <div id="input-line">
+    <span id="input-prompt">lcen&gt;&nbsp;</span><span id="input-before"></span><span id="input-cursor">&nbsp;</span><span id="input-after"></span>
+  </div>
+</div>
+
+<script>
+const API_BASE  = "https://network-server-7kuc.onrender.com";
+const TOKEN_KEY = "lcen_token";
+
+const outEl     = document.getElementById("output");
+const termEl    = document.getElementById("terminal");
+const promptEl  = document.getElementById("input-prompt");
+const beforeEl  = document.getElementById("input-before");
+const cursorEl  = document.getElementById("input-cursor");
+const afterEl   = document.getElementById("input-after");
+
+let buffer   = "";
+let curPos   = 0;
+let history  = [];
+let histIdx  = -1;
+let histTmp  = "";
+let token    = null;
+let gtag     = null;
+let inputLocked = false;
+
+function renderInput() {
+  beforeEl.textContent = buffer.slice(0, curPos);
+  const ch = buffer[curPos];
+  cursorEl.textContent = ch !== undefined ? ch : " ";
+  afterEl.textContent  = buffer.slice(curPos + 1);
+}
+
+function span(text, cls) {
+  const s = document.createElement("span");
+  s.className = cls || "";
+  s.textContent = text;
+  return s;
+}
+
+function appendLine(parts) {
+  const div = document.createElement("div");
+  div.className = "line";
+  if (typeof parts === "string") {
+    div.textContent = parts;
+  } else {
+    parts.forEach(p => div.appendChild(span(p.text, p.cls)));
+  }
+  outEl.appendChild(div);
+  termEl.scrollTop = termEl.scrollHeight;
+}
+
+function printLevel(text, level) {
+  const lines = String(text).split("\n");
+  lines.forEach(l => {
+    switch (level) {
+      case "success": appendLine([{text:"[OK]     ",cls:"c-bgreen bold"},{text:l,cls:"c-bgreen"}]); break;
+      case "warn":    appendLine([{text:"[WARN]   ",cls:"c-byellow bold"},{text:l,cls:"c-byellow"}]); break;
+      case "error":   appendLine([{text:"[ERROR]  ",cls:"c-bred bold"},{text:l,cls:"c-bred"}]); break;
+      case "info":    appendLine([{text:"[INFO]   ",cls:"c-bcyan bold"},{text:l,cls:"c-bcyan"}]); break;
+      case "cmd":     appendLine([{text:"[CMD]    ",cls:"c-bblue bold"},{text:l,cls:"c-bblue"}]); break;
+      case "clear":   outEl.innerHTML = ""; break;
+      default:        appendLine(l); break;
+    }
+  });
+}
+
+function printEcho(cmd) {
+  appendLine([
+    {text: (gtag || "lcen") + "> ", cls: "c-bblack"},
+    {text: cmd, cls: "c-bwhite"}
+  ]);
+}
+
+function setPrompt(name) {
+  promptEl.textContent = (name || "lcen") + "> ";
+}
+
+async function authenticate() {
+  token = localStorage.getItem(TOKEN_KEY);
+  if (!token) {
+    printLevel("No token found. Redirecting...", "error");
+    setTimeout(() => { window.location.href = "/"; }, 1500);
+    return;
+  }
+  try {
+    const r = await fetch(API_BASE + "/auth/validate", {
+      headers: { Authorization: "Bearer " + token }
+    });
+    if (r.status === 401 || r.status === 403) {
+      printLevel("Session invalid. Redirecting...", "error");
+      localStorage.removeItem(TOKEN_KEY);
+      setTimeout(() => { window.location.href = "/"; }, 1500);
+      return;
+    }
+    const d = await r.json();
+    if (d.banned) {
+      printLevel("Account banned. Redirecting...", "error");
+      setTimeout(() => { window.location.href = "/"; }, 1500);
+      return;
+    }
+    if (d.role !== "admin" && d.role !== "moderator") {
+      printLevel("Access denied. Redirecting...", "error");
+      setTimeout(() => { window.location.href = "/"; }, 1500);
+      return;
+    }
+    gtag = d.gamertag;
+    setPrompt(gtag);
+    printLevel("Authenticated as " + d.gamertag + " [" + d.role + "]", "success");
+    appendLine("");
+    printLevel("Type help for available commands.", "info");
+    appendLine("");
+  } catch (e) {
+    printLevel("Could not reach API: " + API_BASE, "error");
+    printLevel("Set API_BASE in index.html to your Render URL.", "warn");
+  }
+}
+
+async function execCommand(raw) {
+  const cmd = raw.trim();
+  printEcho(raw);
+  if (!cmd) return;
+
+  if (cmd.toLowerCase() === "clear") { outEl.innerHTML = ""; return; }
+
+  inputLocked = true;
+  try {
+    const r = await fetch(API_BASE + "/admin/cli/exec", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ command: cmd })
+    });
+
+    if (r.status === 401 || r.status === 403) {
+      printLevel("Session expired. Redirecting...", "error");
+      setTimeout(() => { window.location.href = "/"; }, 1500);
+      return;
+    }
+
+    const ct = r.headers.get("content-type") || "";
+    if (!ct.includes("application/json")) {
+      const text = await r.text();
+      printLevel("Server returned non-JSON: " + text.slice(0, 120), "error");
+      return;
+    }
+
+    const data = await r.json();
+    if (data.error) { printLevel(data.error, "error"); return; }
+    printLevel(data.output || "", data.level || "plain");
+
+  } catch (e) {
+    printLevel("Network error: " + e.message, "error");
+  } finally {
+    inputLocked = false;
+  }
+}
+
+document.addEventListener("keydown", async (e) => {
+  if (inputLocked) return;
+
+  if (e.ctrlKey && e.key === "l") { e.preventDefault(); outEl.innerHTML = ""; return; }
+
+  if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+  switch (e.key) {
+    case "Enter":
+      e.preventDefault();
+      const cmd = buffer;
+      if (cmd.trim()) { history.unshift(cmd); histIdx = -1; histTmp = ""; }
+      buffer = ""; curPos = 0;
+      renderInput();
+      appendLine("");
+      await execCommand(cmd);
+      appendLine("");
+      break;
+
+    case "Backspace":
+      e.preventDefault();
+      if (curPos > 0) { buffer = buffer.slice(0,curPos-1) + buffer.slice(curPos); curPos--; renderInput(); }
+      break;
+
+    case "Delete":
+      e.preventDefault();
+      if (curPos < buffer.length) { buffer = buffer.slice(0,curPos) + buffer.slice(curPos+1); renderInput(); }
+      break;
+
+    case "ArrowLeft":
+      e.preventDefault();
+      if (curPos > 0) { curPos--; renderInput(); }
+      break;
+
+    case "ArrowRight":
+      e.preventDefault();
+      if (curPos < buffer.length) { curPos++; renderInput(); }
+      break;
+
+    case "Home":
+      e.preventDefault();
+      curPos = 0; renderInput();
+      break;
+
+    case "End":
+      e.preventDefault();
+      curPos = buffer.length; renderInput();
+      break;
+
+    case "ArrowUp":
+      e.preventDefault();
+      if (history.length === 0) break;
+      if (histIdx === -1) histTmp = buffer;
+      if (histIdx < history.length - 1) histIdx++;
+      buffer = history[histIdx]; curPos = buffer.length; renderInput();
+      break;
+
+    case "ArrowDown":
+      e.preventDefault();
+      if (histIdx === -1) break;
+      histIdx--;
+      buffer = histIdx === -1 ? histTmp : history[histIdx];
+      curPos = buffer.length; renderInput();
+      break;
+
+    default:
+      if (e.key.length === 1) {
+        e.preventDefault();
+        buffer = buffer.slice(0, curPos) + e.key + buffer.slice(curPos);
+        curPos++;
+        renderInput();
+      }
+  }
+});
+
+termEl.addEventListener("click", () => { });
+
+appendLine([{text:"LCEN Admin Command Prompt [Version 05.06.2026-1.0.0]",cls:"c-bwhite"}]);
+appendLine([{text:"(c) LCEN Network. All rights reserved.",cls:"c-bwhite"}]);
+appendLine("");
+authenticate();
+renderInput();
+</script>
+</body>
+</html>

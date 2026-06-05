@@ -697,3 +697,345 @@ window.LCEN = {
   getToken,
   getProfile,
 };
+const BOARDS = [
+  {
+    name: "Travelling",
+    columns: [
+      { label: "Walked",   icon: "/assets/images/leaderboard/155_LeaderBoard_Icon_Walked.png",  dist: true },
+      { label: "Fallen",   icon: "/assets/images/leaderboard/150_LeaderBoard_Icon_Fallen.png",  dist: true },
+      { label: "Minecart", icon: "/assets/images/leaderboard/minecart.png",                     dist: true },
+      { label: "Boat",     icon: "/assets/images/leaderboard/boat.png",                         dist: true },
+    ],
+  },
+  {
+    name: "Mining",
+    columns: [
+      { label: "Dirt",        icon: "/assets/images/leaderboard/dirt.png",        dist: false },
+      { label: "Cobblestone", icon: "/assets/images/leaderboard/cobblestone.png", dist: false },
+      { label: "Sand",        icon: "/assets/images/leaderboard/sand.png",        dist: false },
+      { label: "Stone",       icon: "/assets/images/leaderboard/stone.png",       dist: false },
+      { label: "Gravel",      icon: "/assets/images/leaderboard/gravel.png",      dist: false },
+      { label: "Clay",        icon: "/assets/images/leaderboard/clay.png",        dist: false },
+      { label: "Obsidian",    icon: "/assets/images/leaderboard/obsidian.png",    dist: false },
+    ],
+  },
+  {
+    name: "Farming",
+    columns: [
+      { label: "Eggs",      icon: "/assets/images/leaderboard/egg.png",       dist: false },
+      { label: "Wheat",     icon: "/assets/images/leaderboard/wheat.png",     dist: false },
+      { label: "Mushroom",  icon: "/assets/images/leaderboard/mushroom.png",  dist: false },
+      { label: "Sugarcane", icon: "/assets/images/leaderboard/sugarcane.png", dist: false },
+      { label: "Milk",      icon: "/assets/images/leaderboard/milk.png",      dist: false },
+      { label: "Pumpkin",   icon: "/assets/images/leaderboard/pumpkin.png",   dist: false },
+    ],
+  },
+  {
+    name: "Kills",
+    columns: [
+      { label: "Zombie",      icon: "/assets/images/leaderboard/154_LeaderBoard_Icon_Zombie.png",       dist: false },
+      { label: "Skeleton",    icon: "/assets/images/leaderboard/160_LeaderBoard_Icon_Skeleton.png",     dist: false },
+      { label: "Creeper",     icon: "/assets/images/leaderboard/151_LeaderBoard_Icon_Creeper.png",      dist: false },
+      { label: "Spider",      icon: "/assets/images/leaderboard/158_LeaderBoard_Icon_Spider.png",       dist: false },
+      { label: "Spider Jock", icon: "/assets/images/leaderboard/157_LeaderBoard_Icon_SpiderJockey.png", dist: false },
+      { label: "Pigman",      icon: "/assets/images/leaderboard/153_LeaderBoard_Icon_ZombiePigman.png", dist: false },
+      { label: "Slime",       icon: "/assets/images/leaderboard/159_LeaderBoard_Icon_Slime.png",        dist: false },
+    ],
+  },
+];
+
+const DIFF_NAMES = ["Peaceful", "Easy", "Normal", "Hard"];
+
+let lbState = {
+  type:    0,
+  diff:    2,
+  filter:  "top",
+  loading: false,
+};
+
+function lbTok()  { return localStorage.getItem("lcen_token"); }
+function lbProf() { try { return JSON.parse(localStorage.getItem("lcen_profile")); } catch { return null; } }
+function lbAvUrl(xuid) { return `${API}/avatar/${xuid}`; }
+
+function lbToast(msg) {
+  const t = document.getElementById("lcenToast");
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+async function lbApi(path) {
+  const headers = { "Content-Type": "application/json" };
+  if (lbTok()) headers["Authorization"] = `Bearer ${lbTok()}`;
+  const res = await fetch(`${API}${path}`, { headers });
+  return res.json();
+}
+
+function fmtDist(v) {
+  if (v === undefined || v === null) return "–";
+  const n = parseInt(v, 10);
+  if (isNaN(n)) return "–";
+  if (n === 0) return "0m";
+  const digits = Math.floor(Math.log10(n)) + 1;
+  if (digits < 4) return `${n}m`;
+  if (digits < 8) return `${(n / 1000).toFixed(1)}km`;
+  return `${Math.round(n / 1000)}km`;
+}
+
+function fmtCount(v) {
+  if (v === undefined || v === null) return "–";
+  const n = parseInt(v, 10);
+  if (isNaN(n)) return "–";
+  if (n > 99999) return "99999";
+  return n.toLocaleString();
+}
+
+function clampDiff(type, diff) {
+  if (type === 3 && diff === 0) return 1;
+  return diff;
+}
+
+function updateDiffButtons() {
+  document.querySelectorAll('#diffGroup .seg-btn').forEach(btn => {
+    const d = parseInt(btn.dataset.diff);
+    if (lbState.type === 3 && d === 0) {
+      btn.disabled = true;
+      btn.style.opacity = "0.35";
+      btn.style.cursor = "not-allowed";
+    } else {
+      btn.disabled = false;
+      btn.style.opacity = "";
+      btn.style.cursor = "";
+    }
+  });
+  if (lbState.type === 3 && lbState.diff === 0) {
+    lbState.diff = 1;
+    document.querySelectorAll('#diffGroup .seg-btn').forEach(btn => {
+      btn.classList.toggle("active", parseInt(btn.dataset.diff) === lbState.diff);
+    });
+  }
+}
+
+async function lbFetchEntries() {
+  const { type, filter } = lbState;
+  const diff = clampDiff(type, lbState.diff);
+  const me = lbProf();
+
+  if (filter === "friends") {
+    if (!lbTok() || !me) return lbFetchGlobal(type, diff);
+    try {
+      const friends = await lbApi("/friends");
+      const xuids = [me.xuid, ...friends.map(f => f.xuid)].join(",");
+      const data = await lbApi(`/leaderboard/friends?type=${type}&difficulty=${diff}&xuids=${encodeURIComponent(xuids)}`);
+      return Array.isArray(data) ? data : [];
+    } catch { return []; }
+  }
+
+  if (filter === "me") {
+    if (!lbTok() || !me) return [];
+    try {
+      const rankData = await lbApi(`/leaderboard/rank?uid=${me.xuid}&type=${type}&difficulty=${diff}`);
+      if (!rankData || rankData.rank < 0) return [];
+      const offset = Math.max(0, rankData.rank - 6);
+      const data = await lbApi(`/leaderboard?type=${type}&difficulty=${diff}&limit=11&offset=${offset}`);
+      return Array.isArray(data) ? data : [];
+    } catch { return []; }
+  }
+
+  return lbFetchGlobal(type, diff);
+}
+
+async function lbFetchGlobal(type, diff) {
+  try {
+    const data = await lbApi(`/leaderboard?type=${type}&difficulty=${diff}&limit=64&offset=0`);
+    return Array.isArray(data) ? data : [];
+  } catch { return []; }
+}
+
+function lbRenderTable(entries) {
+  const panel = document.getElementById("tablePanel");
+  const board = BOARDS[lbState.type];
+  const diff  = clampDiff(lbState.type, lbState.diff);
+  const me    = lbProf();
+  const myXuid = me?.xuid || null;
+  const isDistBoard = board.columns[0]?.dist === true;
+
+  if (!entries || entries.length === 0) {
+    panel.innerHTML = `
+      <div class="lb-header-panel">
+        <div class="lb-title-group">
+          <div class="lb-title">${board.name}</div>
+          <div class="lb-subtitle">${DIFF_NAMES[diff]}</div>
+        </div>
+        <span class="lb-entries-badge">Entries: 0</span>
+      </div>
+      <div class="empty-state">No entries found for this leaderboard.</div>`;
+    return;
+  }
+
+  const colHeaders = board.columns.map(col => `
+    <th class="col-icon" title="${col.label}">
+      <img class="col-icon-img" src="${col.icon}" alt="${col.label}">
+    </th>
+  `).join("");
+
+  const rows = entries.map((entry, idx) => {
+    const rank     = entry.rank ?? (idx + 1);
+    const isPlayer = myXuid && entry.uid && entry.uid.toUpperCase() === myXuid.toUpperCase();
+    const stats    = entry.stats || [];
+
+    let rankCell;
+    if (rank === 1)      rankCell = `<span class="rank-medal m1">1</span>`;
+    else if (rank === 2) rankCell = `<span class="rank-medal m2">2</span>`;
+    else if (rank === 3) rankCell = `<span class="rank-medal m3">3</span>`;
+    else                 rankCell = `<span style="color:var(--muted);font-family:'Rajdhani',sans-serif;font-weight:700;">${rank}</span>`;
+
+    const rowClass = [
+      rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "",
+      isPlayer ? "is-player" : ""
+    ].filter(Boolean).join(" ");
+
+    const statCells = board.columns.map((col, i) => {
+      const val = stats[i] ?? 0;
+      const fmt = col.dist ? fmtDist(val) : fmtCount(val);
+      return `<td class="td-stat${col.dist ? " dist" : ""}">${fmt}</td>`;
+    }).join("");
+
+    const totalFmt = isDistBoard ? fmtDist(entry.totalScore) : fmtCount(entry.totalScore);
+
+    return `
+      <tr class="${rowClass}">
+        <td class="td-rank td-rank-cell">${rankCell}</td>
+        <td class="td-name-cell">
+          <div class="td-name">
+            <img class="td-name-avatar" src="${lbAvUrl(entry.uid)}" alt="" onerror="this.style.display='none'">
+            <span class="td-name-tag${isPlayer ? " is-player" : ""}">${entry.gamertag || "Unknown"}</span>
+            ${isPlayer ? `<span class="player-badge">You</span>` : ""}
+          </div>
+        </td>
+        ${statCells}
+        <td class="td-total td-total-cell${isDistBoard ? " dist" : ""}">${totalFmt}</td>
+      </tr>`;
+  }).join("");
+
+  panel.innerHTML = `
+    <div class="lb-header-panel">
+      <div class="lb-title-group">
+        <div class="lb-title">${board.name}</div>
+        <div class="lb-subtitle">${DIFF_NAMES[diff]}</div>
+      </div>
+      <span class="lb-entries-badge">Entries: ${entries.length}</span>
+    </div>
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th class="col-rank">Rank</th>
+          <th class="col-name">Gamertag</th>
+          ${colHeaders}
+          <th class="col-total">Total</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+async function lbLoad() {
+  if (lbState.loading) return;
+  lbState.loading = true;
+  document.getElementById("tablePanel").innerHTML =
+    `<div class="spinner-wrap"><div class="spinner"></div></div>`;
+  try {
+    const entries = await lbFetchEntries();
+    lbRenderTable(entries);
+  } catch {
+    document.getElementById("tablePanel").innerHTML =
+      `<div class="empty-state">Failed to load leaderboard. Please try again.</div>`;
+  }
+  lbState.loading = false;
+}
+
+function lbWireControls() {
+  document.querySelectorAll('#typeGroup .seg-btn').forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (lbState.loading) return;
+      lbState.type = parseInt(btn.dataset.type);
+      document.querySelectorAll('#typeGroup .seg-btn').forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      updateDiffButtons();
+      lbLoad();
+    });
+  });
+
+  document.querySelectorAll('#diffGroup .seg-btn').forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (lbState.loading || btn.disabled) return;
+      lbState.diff = parseInt(btn.dataset.diff);
+      document.querySelectorAll('#diffGroup .seg-btn').forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      lbLoad();
+    });
+  });
+
+  document.querySelectorAll('#filterGroup .seg-btn').forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (lbState.loading) return;
+      const f = btn.dataset.filter;
+      if ((f === "friends" || f === "me") && !lbTok()) {
+        lbToast("Sign in to use this filter");
+        return;
+      }
+      lbState.filter = f;
+      document.querySelectorAll('#filterGroup .seg-btn').forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      lbLoad();
+    });
+  });
+}
+
+function lbBuildNavBar() {
+  const me = lbProf();
+  const nu = document.getElementById("navUser");
+  if (!nu) return;
+  if (!me) { nu.style.display = "none"; return; }
+  nu.style.display = "";
+  document.getElementById("navAvatarImg").src = lbAvUrl(me.xuid);
+  document.getElementById("navGamertag").textContent = me.gamertag;
+  document.getElementById("navGs").textContent = `${me.gamerscore || 0} G`;
+  nu.onclick = () => { window.location.href = "/profile/"; };
+}
+
+function initLeaderboards() {
+  lbBuildNavBar();
+  lbWireControls();
+  updateDiffButtons();
+  lbLoad();
+
+  (function setupPanorama() {
+    const track = document.getElementById("panoramaTrack");
+    const img1  = document.getElementById("panoImg1");
+    if (!track || !img1) return;
+    function onLoad() {
+      const w = img1.naturalWidth;
+      const h = img1.naturalHeight;
+      const scale = (window.innerHeight * 1.04) / h;
+      const displayW = w * scale;
+      img1.style.width = `${displayW}px`;
+      img1.style.minWidth = "unset";
+      const img2 = document.getElementById("panoImg2");
+      if (img2) { img2.style.width = `${displayW}px`; img2.style.minWidth = "unset"; }
+      const dur = displayW / 40;
+      const style = document.createElement("style");
+      style.textContent = `@keyframes panBg { 0% { transform: translateX(0); } 100% { transform: translateX(-${displayW}px); } }`;
+      document.head.appendChild(style);
+      track.style.animation = "none";
+      track.offsetHeight;
+      track.style.animation = `panBg ${dur}s linear infinite`;
+    }
+    if (img1.complete) onLoad();
+    else img1.addEventListener("load", onLoad);
+  })();
+}
+
+window.LCEN = window.LCEN || {};
+window.LCEN.initLeaderboards = initLeaderboards;

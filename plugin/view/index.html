@@ -1,0 +1,1291 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LCE Network | Plugins</title>
+    <link rel="icon" href="/assets/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #0a0c10;
+        --surface: rgba(255, 255, 255, 0.04);
+        --surface2: rgba(255, 255, 255, 0.07);
+        --border: rgba(255, 255, 255, 0.08);
+        --border2: rgba(255, 255, 255, 0.14);
+        --text: #e8eaf0;
+        --muted: #7a8090;
+        --accent: #4fc3f7;
+        --accent2: #81c784;
+        --gold: #ffd54f;
+        --red: #ef5350;
+        --nav-h: 56px;
+      }
+      html,
+      body {
+        min-height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 15px;
+        line-height: 1.5;
+        overflow-x: hidden;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .panorama-wrap {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .panorama-track {
+        display: flex;
+        height: 100%;
+        will-change: transform;
+      }
+      .panorama-img {
+        height: 100%;
+        width: auto;
+        min-width: 100vw;
+        object-fit: cover;
+        flex-shrink: 0;
+        filter: blur(3px) brightness(0.38) saturate(0.7);
+        transform: scale(1.04);
+      }
+      .panorama-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(10, 12, 16, 0.3) 0%,
+          rgba(10, 12, 16, 0.1) 40%,
+          rgba(10, 12, 16, 0.55) 100%
+        );
+      }
+
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--nav-h);
+        background: rgba(10, 12, 16, 0.85);
+        backdrop-filter: blur(18px);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 28px;
+        gap: 32px;
+        z-index: 100;
+      }
+      .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+      }
+      .nav-logo img {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+      }
+      .nav-logo-text {
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 700;
+        font-size: 1.15rem;
+        letter-spacing: 0.04em;
+      }
+      .nav-links {
+        display: flex;
+        gap: 4px;
+        flex: 1;
+      }
+      .nav-link {
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.88rem;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        padding: 6px 14px;
+        border-radius: 4px;
+        transition:
+          color 0.15s,
+          background 0.15s;
+      }
+      .nav-link:hover {
+        color: var(--text);
+        background: var(--surface);
+      }
+      .nav-link.active {
+        color: var(--accent);
+      }
+      .nav-user {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+      }
+      .nav-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .nav-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .nav-gamertag {
+        font-family: "DM Sans", sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 0.04em;
+      }
+      .nav-gs {
+        font-size: 0.78rem;
+        color: var(--gold);
+        font-weight: 500;
+      }
+
+      .page {
+        position: relative;
+        z-index: 1;
+        padding-top: calc(var(--nav-h) + 32px);
+        padding-bottom: 80px;
+        min-height: 100vh;
+      }
+      .wrap {
+        max-width: 1020px;
+        margin: 0 auto;
+        padding: 0 24px;
+        animation: fadeUp 0.4s ease both;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .panel {
+        background: rgba(10, 12, 16, 0.72);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        backdrop-filter: blur(12px);
+        overflow: hidden;
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
+      .breadcrumb a {
+        color: var(--accent);
+      }
+      .breadcrumb .sep {
+        opacity: 0.4;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr 260px;
+        gap: 16px;
+        align-items: start;
+      }
+
+      .panel-header {
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--border);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+      .panel-body {
+        padding: 16px 18px;
+      }
+
+      .title-row {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .plugin-icon-lg {
+        width: 85px;
+        height: 85px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        flex-shrink: 0;
+        background: var(--surface);
+      }
+      .plugin-icon-lg img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .title-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .plugin-title {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 1.7rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        line-height: 1.1;
+      }
+      .plugin-author-line {
+        font-size: 0.84rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .plugin-author-line a {
+        color: var(--accent);
+      }
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 3px 9px;
+        border-radius: 3px;
+      }
+      .badge-cat {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--muted);
+      }
+      .badge-plat {
+        background: rgba(129, 199, 132, 0.1);
+        color: var(--accent2);
+        border: 1px solid rgba(129, 199, 132, 0.2);
+      }
+      .badge-unlisted {
+        background: rgba(255, 213, 79, 0.1);
+        color: var(--gold);
+        border: 1px solid rgba(255, 213, 79, 0.2);
+      }
+      .badge-private {
+        background: rgba(239, 83, 80, 0.1);
+        color: var(--red);
+        border: 1px solid rgba(239, 83, 80, 0.2);
+      }
+
+      /* ─── MARKDOWN DESCRIPTION ─── */
+      .description-body {
+        font-size: 0.88rem;
+        line-height: 1.8;
+        color: #cdd0d8;
+        word-break: break-word;
+      }
+
+      .description-body h1 {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 1.55rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: var(--text);
+        margin: 0 0 10px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid rgba(79, 195, 247, 0.2);
+      }
+      .description-body h2 {
+        font-family: "DM Sans", sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin: 20px 0 8px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(79, 195, 247, 0.12);
+      }
+      .description-body h3 {
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text);
+        margin: 16px 0 6px;
+      }
+      .description-body h4 {
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.84rem;
+        font-weight: 700;
+        color: var(--muted);
+        margin: 12px 0 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .description-body p {
+        margin: 0 0 10px;
+      }
+      .description-body p:last-child {
+        margin-bottom: 0;
+      }
+      .description-body a {
+        color: var(--accent);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .description-body a:hover {
+        opacity: 0.8;
+      }
+      .description-body strong {
+        color: var(--text);
+        font-weight: 700;
+      }
+      .description-body em {
+        color: #b8bcc8;
+      }
+      .description-body ul,
+      .description-body ol {
+        margin: 0 0 12px 20px;
+        padding: 0;
+      }
+      .description-body li {
+        margin-bottom: 4px;
+        color: #cdd0d8;
+      }
+      .description-body li p {
+        margin: 0;
+      }
+      .description-body hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 18px 0;
+      }
+      .description-body img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 12px auto;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+      }
+      .description-body blockquote {
+        margin: 12px 0;
+        padding: 10px 16px;
+        background: rgba(79, 195, 247, 0.05);
+        border-left: 3px solid var(--accent);
+        border-radius: 0 5px 5px 0;
+        color: #aab0be;
+        font-style: italic;
+      }
+      .description-body blockquote p {
+        margin: 0;
+      }
+
+      /* Inline code */
+      .description-body :not(pre) > code {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 0.83em;
+        color: #e0c4ff;
+      }
+
+      /* Fenced code blocks */
+      .description-body .code-block-wrap {
+        margin: 12px 0;
+        border-radius: 7px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .description-body .code-block-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 14px;
+        background: rgba(255, 255, 255, 0.06);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+      .description-body .code-copy-btn {
+        background: none;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 3px;
+        color: var(--muted);
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        transition: all 0.15s;
+      }
+      .description-body .code-copy-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      .description-body .code-copy-btn.copied {
+        color: var(--accent2);
+        border-color: rgba(129, 199, 132, 0.4);
+      }
+      .description-body pre {
+        margin: 0 !important;
+        border-radius: 0 !important;
+        border: none !important;
+        background: #1a1d27 !important;
+        overflow-x: auto;
+      }
+      .description-body pre code.hljs {
+        font-family: Consolas, "Courier New", monospace !important;
+        font-size: 0.82rem !important;
+        line-height: 1.65 !important;
+        padding: 14px 16px !important;
+        background: transparent !important;
+        border: none !important;
+        display: block;
+        overflow-x: auto;
+      }
+
+      /* Tables */
+      .description-body table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.84rem;
+        margin: 12px 0;
+      }
+      .description-body th {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 8px 12px;
+        text-align: left;
+        border: 1px solid var(--border);
+      }
+      .description-body td {
+        padding: 7px 12px;
+        border: 1px solid var(--border);
+        vertical-align: top;
+      }
+      .description-body tr:nth-child(even) td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      /* ─── END MARKDOWN ─── */
+
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .dl-btn {
+        display: block;
+        width: 100%;
+        padding: 11px;
+        background: rgba(79, 195, 247, 0.1);
+        border: 1px solid rgba(79, 195, 247, 0.25);
+        border-radius: 6px;
+        color: var(--accent);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-align: center;
+        cursor: pointer;
+        transition: background 0.15s;
+        letter-spacing: 0.04em;
+      }
+      .dl-btn:hover {
+        background: rgba(79, 195, 247, 0.18);
+      }
+      .like-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        width: 100%;
+        margin-top: 8px;
+        padding: 9px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--muted);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.84rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .like-btn:hover {
+        border-color: rgba(239, 83, 80, 0.3);
+        color: #ef5350;
+      }
+      .like-btn.liked {
+        color: #ef5350;
+        border-color: rgba(239, 83, 80, 0.3);
+        background: rgba(239, 83, 80, 0.07);
+      }
+      .like-btn i {
+        font-size: 0.9rem;
+      }
+
+      .stat-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .stat-table tr {
+        border-bottom: 1px solid var(--border);
+      }
+      .stat-table tr:last-child {
+        border-bottom: none;
+      }
+      .stat-table td {
+        padding: 8px 0;
+        font-size: 0.83rem;
+      }
+      .stat-lbl {
+        color: var(--muted);
+        width: 45%;
+      }
+      .stat-val {
+        color: var(--text);
+        font-weight: 500;
+      }
+      .stat-val a {
+        color: var(--accent);
+      }
+
+      .author-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .author-av {
+        width: 40px;
+        height: 40px;
+        border-radius: 5px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        flex-shrink: 0;
+        background: var(--surface);
+      }
+      .author-av img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .author-gt {
+        font-family: "DM Sans", sans-serif;
+        font-weight: 700;
+        font-size: 0.94rem;
+      }
+      .author-link {
+        font-size: 0.75rem;
+        color: var(--accent);
+        margin-top: 2px;
+        display: block;
+      }
+
+      .manage-btns {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .btn-edit {
+        display: block;
+        text-align: center;
+        padding: 9px;
+        background: rgba(129, 199, 132, 0.1);
+        border: 1px solid rgba(129, 199, 132, 0.25);
+        border-radius: 6px;
+        color: var(--accent2);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.84rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .btn-edit:hover {
+        background: rgba(129, 199, 132, 0.18);
+      }
+      .btn-delete {
+        display: block;
+        text-align: center;
+        padding: 9px;
+        background: rgba(239, 83, 80, 0.08);
+        border: 1px solid rgba(239, 83, 80, 0.2);
+        border-radius: 6px;
+        color: var(--red);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.84rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s;
+        width: 100%;
+      }
+      .btn-delete:hover {
+        background: rgba(239, 83, 80, 0.14);
+      }
+
+      .error-box {
+        padding: 52px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .error-box a {
+        color: var(--accent);
+        margin-top: 12px;
+        display: inline-block;
+      }
+
+      .toast-lcen {
+        position: fixed;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%) translateY(12px);
+        background: rgba(13, 16, 24, 0.95);
+        border: 1px solid var(--border2);
+        color: var(--text);
+        font-size: 0.84rem;
+        font-weight: 500;
+        padding: 9px 20px;
+        border-radius: 6px;
+        z-index: 500;
+        opacity: 0;
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+        pointer-events: none;
+        backdrop-filter: blur(8px);
+      }
+      .toast-lcen.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .del-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+      }
+      .del-overlay.open {
+        display: flex;
+      }
+      .del-modal {
+        background: #0e1118;
+        border: 1px solid var(--border2);
+        border-radius: 10px;
+        padding: 28px;
+        max-width: 400px;
+        width: 90%;
+      }
+      .del-title {
+        font-family: "DM Sans", sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .del-desc {
+        font-size: 0.84rem;
+        color: var(--muted);
+        margin-bottom: 20px;
+      }
+      .del-actions {
+        display: flex;
+        gap: 10px;
+      }
+      .del-confirm {
+        flex: 1;
+        padding: 9px;
+        background: rgba(239, 83, 80, 0.12);
+        border: 1px solid rgba(239, 83, 80, 0.25);
+        border-radius: 6px;
+        color: var(--red);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.86rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .del-cancel {
+        flex: 1;
+        padding: 9px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--muted);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.86rem;
+        cursor: pointer;
+      }
+
+      @media (max-width: 780px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    
+/* ===== shared nav actions (search + user menu) ===== */
+.nav-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.nav-search-wrap{position:relative;}
+.nav-search{display:flex;align-items:center;background:rgba(255,255,255,0.06);border-radius:999px;padding:7px 14px;gap:8px;border:1px solid var(--border);transition:border-color .15s,box-shadow .15s;}
+.nav-search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,195,247,0.12);}
+.nav-search input{border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--text);outline:none;width:140px;}
+.nav-search input::placeholder{color:var(--muted);}
+.nav-search svg{color:var(--muted);flex-shrink:0;}
+.nav-sr{position:absolute;top:calc(100% + 10px);left:0;width:280px;background:#13161e;border:1px solid var(--border2);border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,0.5);overflow:hidden;opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .15s,transform .15s;z-index:200;max-height:360px;overflow-y:auto;}
+.nav-sr.show{opacity:1;transform:translateY(0);pointer-events:all;}
+.nav-sr-empty,.nav-sr-loading{padding:18px 16px;font-size:0.85rem;color:var(--muted);text-align:center;}
+.nav-sr-item{display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;transition:background .12s;}
+.nav-sr-item:hover{background:rgba(255,255,255,0.05);}
+.nav-sr-item img{width:32px;height:32px;border-radius:6px;object-fit:cover;background:var(--surface);flex-shrink:0;}
+.nav-sr-name{font-size:0.88rem;font-weight:600;color:var(--text);}
+.nav-sr-meta{font-size:0.74rem;color:var(--muted);}
+.nav-sr-footer{padding:10px 14px;text-align:center;font-size:0.8rem;font-weight:600;color:var(--accent);border-top:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.nav-sr-footer:hover{background:rgba(255,255,255,0.04);}
+.nav-uw{position:relative;}
+.nav-ut{display:flex;align-items:center;gap:8px;background:transparent;border:1px solid transparent;border-radius:999px;padding:4px 10px 4px 4px;cursor:pointer;transition:background .15s,border-color .15s;}
+.nav-ut:hover{background:rgba(255,255,255,0.06);border-color:var(--border);}
+.nav-ut img{width:30px;height:30px;border-radius:6px;object-fit:cover;background:var(--surface);flex-shrink:0;}
+.nav-ut .trig-n{font-size:0.85rem;font-weight:600;color:var(--text);max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-ut svg{color:var(--muted);transition:transform .15s;flex-shrink:0;}
+.nav-uw.open .nav-ut svg{transform:rotate(180deg);}
+.nav-um{position:absolute;top:calc(100% + 10px);right:0;width:220px;background:#13161e;border:1px solid var(--border2);border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,0.5);overflow:hidden;opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .15s,transform .15s;z-index:200;}
+.nav-uw.open .nav-um{opacity:1;transform:translateY(0);pointer-events:all;}
+.nav-um-hdr{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid var(--border);}
+.nav-um-hdr img{width:38px;height:38px;border-radius:7px;object-fit:cover;background:var(--surface);flex-shrink:0;}
+.nav-um-name{font-size:0.92rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-um-sub{font-size:0.74rem;color:var(--gold);}
+.nav-um-links{padding:6px;}
+.nav-um-link{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:5px;font-size:0.86rem;font-weight:500;color:var(--text);transition:background .12s;}
+.nav-um-link:hover{background:rgba(255,255,255,0.06);}
+.nav-um-link svg{color:var(--muted);flex-shrink:0;}
+.nav-um-div{height:1px;background:var(--border);margin:6px 0;}
+.nav-um-link.danger{color:#ef5350;}
+.nav-um-link.danger svg{color:#ef5350;}
+.nav-gbtn{background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;padding:7px 16px;cursor:pointer;transition:color .15s,background .15s;}
+.nav-gbtn:hover{color:var(--text);background:rgba(255,255,255,0.06);}
+.nav-pbtn{background:var(--accent);border:none;border-radius:6px;color:#000;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:700;padding:7px 16px;cursor:pointer;transition:opacity .15s;}
+.nav-pbtn:hover{opacity:0.85;}
+
+</style>
+  </head>
+  <body>
+    <div class="panorama-wrap">
+      <div class="panorama-track" id="panoramaTrack">
+        <img
+          src="/assets/images/panorama.png"
+          alt=""
+          class="panorama-img"
+          id="panoImg1"
+        />
+        <img
+          src="/assets/images/panorama.png"
+          alt=""
+          class="panorama-img"
+          id="panoImg2"
+        />
+      </div>
+      <div class="panorama-overlay"></div>
+    </div>
+
+    <div class="toast-lcen" id="lcenToast"></div>
+
+    <div class="del-overlay" id="delOverlay">
+      <div class="del-modal">
+        <div class="del-title">Delete Plugin</div>
+        <div class="del-desc" id="delDesc">
+          Are you sure? This cannot be undone.
+        </div>
+        <div class="del-actions">
+          <button class="del-cancel" id="delCancel">Cancel</button>
+          <button class="del-confirm" id="delConfirm">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <nav>
+      <a href="/" class="nav-logo">
+        <img src="/assets/logo.png" alt="LCEN" />
+        <span class="nav-logo-text">LCE Network</span>
+      </a>
+      <div class="nav-links">
+    <a href="/" class="nav-link"><i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Home</a>
+    <a href="/dashboard/" class="nav-link">Dashboard</a>
+    <a href="/messages/" class="nav-link">Messages</a>
+    <a href="/profile/" class="nav-link">Profile</a>
+    <a href="/friends/" class="nav-link">Friends</a>
+    <a href="/plugin/" class="nav-link active">Plugins</a>
+    <a href="/servers/" class="nav-link">Servers</a>
+    <a href="/leaderboards/" class="nav-link">Leaderboards</a>
+      </div>
+      <div class="nav-actions" id="_nav_actions"></div>
+    </nav>
+
+    <div class="page">
+      <div class="wrap" id="pageRoot">
+        <div class="error-box">Loading&#8230;</div>
+      </div>
+    </div>
+
+    <script>
+      const API = "https://network-server-7kuc.onrender.com";
+
+      function token() {
+        return localStorage.getItem("lcen_token");
+      }
+      function profile() {
+        try {
+          return JSON.parse(localStorage.getItem("lcen_profile"));
+        } catch {
+          return null;
+        }
+      }
+      function avatarUrl(xuid) {
+        return `${API}/avatar/${xuid}`;
+      }
+
+      function showToast(msg) {
+        const t = document.getElementById("lcenToast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2800);
+      }
+
+      function esc(s) {
+        return String(s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+      function fmtDate(d) {
+        if (!d) return "—";
+        return new Date(d).toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        });
+      }
+      function numFmt(n) {
+        return Number(n || 0).toLocaleString();
+      }
+
+      /* ── MARKED + HLJS ── */
+      marked.setOptions({ breaks: true, gfm: true });
+
+      const _renderer = new marked.Renderer();
+      _renderer.code = function (code, lang) {
+        let language = (typeof lang === "object" ? lang.lang : lang) || "";
+        let codeStr = (typeof code === "object" ? code.text : code) || "";
+        const validLang =
+          language && hljs.getLanguage(language) ? language : "";
+        const highlighted = validLang
+          ? hljs.highlight(codeStr, { language: validLang }).value
+          : hljs.highlightAuto(codeStr).value;
+        const displayLang = (validLang || "code").toLowerCase();
+        const uid = "copy-" + Math.random().toString(36).slice(2, 9);
+        const escaped = codeStr
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+        return `<div class="code-block-wrap">
+<div class="code-block-header"><span>${esc(displayLang)}</span><button class="code-copy-btn" data-uid="${uid}">Copy</button></div>
+<pre><code class="hljs language-${esc(displayLang)}">${highlighted}</code></pre>
+<textarea id="${uid}" style="position:absolute;left:-9999px;opacity:0;pointer-events:none;" aria-hidden="true" tabindex="-1">${escaped}</textarea>
+</div>`;
+      };
+      marked.use({ renderer: _renderer });
+
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".code-copy-btn");
+        if (!btn) return;
+        const ta = document.getElementById(btn.dataset.uid);
+        if (!ta) return;
+        const text = ta.value
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&quot;/g, '"');
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            btn.textContent = "Copied!";
+            btn.classList.add("copied");
+            setTimeout(() => {
+              btn.textContent = "Copy";
+              btn.classList.remove("copied");
+            }, 1800);
+          })
+          .catch(() => {
+            btn.textContent = "Failed";
+            setTimeout(() => (btn.textContent = "Copy"), 1500);
+          });
+      });
+
+      function parseMarkdown(md) {
+        if (!md) return `<em style="opacity:.45">No description provided.</em>`;
+        return marked.parse(md);
+      }
+
+      (function setupPanorama() {
+        const track = document.getElementById("panoramaTrack");
+        const img1 = document.getElementById("panoImg1");
+        function onLoad() {
+          const scale = (window.innerHeight * 1.04) / img1.naturalHeight;
+          const displayW = img1.naturalWidth * scale;
+          img1.style.width = displayW + "px";
+          img1.style.minWidth = "unset";
+          document.getElementById("panoImg2").style.width = displayW + "px";
+          document.getElementById("panoImg2").style.minWidth = "unset";
+          const style = document.createElement("style");
+          style.textContent = `@keyframes pan{0%{transform:translateX(0);}100%{transform:translateX(-${displayW}px);}}`;
+          document.head.appendChild(style);
+          track.style.animation = `pan ${displayW / 40}s linear infinite`;
+        }
+        img1.complete ? onLoad() : img1.addEventListener("load", onLoad);
+      })();
+
+      async function init() {
+        const p = profile();
+        const root = document.getElementById("pageRoot");
+
+        if (p) {
+            `${p.gamerscore || 0} G`;
+        }
+
+        const id = new URLSearchParams(location.search).get("id");
+        if (!id) {
+          root.innerHTML = `<div class="error-box">No plugin ID specified.<br><a href="/plugin/">Back to Library</a></div>`;
+          return;
+        }
+
+        let plugin;
+        try {
+          const res = await fetch(`${API}/plugins/${id}`, {
+            headers: { Authorization: `Bearer ${token() || ""}` },
+          });
+          if (!res.ok) {
+            const d = await res.json().catch(() => ({}));
+            root.innerHTML = `<div class="error-box">${esc(d.error || "Plugin not found.")}<br><a href="/plugin/">Back to Library</a></div>`;
+            return;
+          }
+          plugin = await res.json();
+        } catch {
+          root.innerHTML = `<div class="error-box">Failed to load plugin.<br><a href="/plugin/">Back to Library</a></div>`;
+          return;
+        }
+
+        document.title = `${plugin.name} | LCE Network`;
+
+        const isOwner = p && p.xuid === plugin.ownerXuid;
+        const liked = p && (plugin.liked_by || []).includes(p.xuid);
+
+        let badges = "";
+        if (plugin.category)
+          badges += `<span class="badge badge-cat">${esc(plugin.category)}</span>`;
+        if (plugin.game_version)
+          badges += `<span class="badge badge-plat">${esc(plugin.game_version)}</span>`;
+        if (plugin.visibility === "unlisted")
+          badges += `<span class="badge badge-unlisted">Unlisted</span>`;
+        if (plugin.visibility === "private")
+          badges += `<span class="badge badge-private">Private</span>`;
+
+        root.innerHTML = `
+    <div class="breadcrumb">
+      <a href="/plugin/">Plugins</a>
+      <span class="sep">&#x203A;</span>
+      <a href="/profile/?xuid=${esc(plugin.ownerXuid)}">${esc(plugin.ownerGamertag)}</a>
+      <span class="sep">&#x203A;</span>
+      <span>${esc(plugin.name)}</span>
+    </div>
+
+    <div class="layout">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="panel">
+          <div class="panel-header">Plugin Details</div>
+          <div class="panel-body">
+            <div class="title-row">
+              <div class="plugin-icon-lg">
+                <img src="${API}/plugins/${id}/icon" alt="" onerror="this.onerror=null;this.style.opacity='.4'">
+              </div>
+              <div class="title-info">
+                <div class="plugin-title">${esc(plugin.name)}</div>
+                <div class="plugin-author-line">
+                  by <a href="/profile/?xuid=${esc(plugin.ownerXuid)}">${esc(plugin.ownerGamertag)}</a>
+                  &nbsp;&middot;&nbsp; Uploaded ${fmtDate(plugin.created_at)}
+                </div>
+                <div class="badges">${badges}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">Description</div>
+          <div class="panel-body">
+            <div class="description-body" id="descBody"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="panel">
+          <div class="panel-header">Download</div>
+          <div class="panel-body">
+            <a href="${API}/plugins/${id}/download" class="dl-btn">
+              <i class="fa-solid fa-download"></i>&nbsp; Download (.dll)
+            </a>
+            <button class="like-btn ${liked ? "liked" : ""}" id="likeBtn">
+              <i class="fa-${liked ? "solid" : "regular"} fa-heart"></i>
+              <span id="likeCount">${numFmt(plugin.likes)}</span> Likes
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">Statistics</div>
+          <div class="panel-body" style="padding:10px 16px;">
+            <table class="stat-table">
+              <tr><td class="stat-lbl">Downloads</td><td class="stat-val">${numFmt(plugin.downloads)}</td></tr>
+              <tr><td class="stat-lbl">Likes</td><td class="stat-val">${numFmt(plugin.likes)}</td></tr>
+              <tr><td class="stat-lbl">Uploaded</td><td class="stat-val">${fmtDate(plugin.created_at)}</td></tr>
+              ${plugin.game_version ? `<tr><td class="stat-lbl">Platform</td><td class="stat-val">${esc(plugin.game_version)}</td></tr>` : ""}
+              ${plugin.category ? `<tr><td class="stat-lbl">Category</td><td class="stat-val" style="text-transform:capitalize">${esc(plugin.category)}</td></tr>` : ""}
+              ${plugin.github_url ? `<tr><td class="stat-lbl">Source</td><td class="stat-val"><a href="${esc(plugin.github_url)}" target="_blank" rel="noopener">GitHub &#x2197;</a></td></tr>` : ""}
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">Author</div>
+          <div class="panel-body">
+            <div class="author-row">
+              <div class="author-av">
+                <img src="${avatarUrl(plugin.ownerXuid)}" alt="" onerror="this.style.opacity='.3'">
+              </div>
+              <div>
+                <div class="author-gt">${esc(plugin.ownerGamertag)}</div>
+                <a href="/profile/?xuid=${esc(plugin.ownerXuid)}" class="author-link">View Profile &#x2192;</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        ${
+          isOwner
+            ? `
+        <div class="panel">
+          <div class="panel-header">Manage</div>
+          <div class="panel-body">
+            <div class="manage-btns">
+              <a href="/plugin/edit/?id=${id}" class="btn-edit">
+                <i class="fa-solid fa-pen-to-square"></i>&nbsp; Edit Plugin
+              </a>
+              <button class="btn-delete" id="deleteBtn">
+                <i class="fa-solid fa-trash"></i>&nbsp; Delete Plugin
+              </button>
+            </div>
+          </div>
+        </div>`
+            : ""
+        }
+      </div>
+    </div>`;
+
+        /* Render markdown AFTER innerHTML so #descBody exists */
+        document.getElementById("descBody").innerHTML = parseMarkdown(
+          plugin.description,
+        );
+
+        let currentLiked = liked;
+        let currentLikes = plugin.likes || 0;
+
+        document
+          .getElementById("likeBtn")
+          ?.addEventListener("click", async () => {
+            if (!p) {
+              showToast("You must be logged in to like plugins.");
+              return;
+            }
+            try {
+              const res = await fetch(`${API}/plugins/${id}/like`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token()}` },
+              });
+              const data = await res.json();
+              currentLiked = data.liked;
+              currentLikes = data.likes;
+              const btn = document.getElementById("likeBtn");
+              btn.className = `like-btn ${currentLiked ? "liked" : ""}`;
+              btn.innerHTML = `<i class="fa-${currentLiked ? "solid" : "regular"} fa-heart"></i> <span id="likeCount">${numFmt(currentLikes)}</span> Likes`;
+            } catch {
+              showToast("Failed to toggle like.");
+            }
+          });
+
+        document.getElementById("deleteBtn")?.addEventListener("click", () => {
+          document.getElementById("delDesc").textContent =
+            `Delete "${plugin.name}"? This cannot be undone.`;
+          document.getElementById("delOverlay").classList.add("open");
+        });
+        document
+          .getElementById("delCancel")
+          ?.addEventListener("click", () =>
+            document.getElementById("delOverlay").classList.remove("open"),
+          );
+        document
+          .getElementById("delConfirm")
+          ?.addEventListener("click", async () => {
+            try {
+              await fetch(`${API}/plugins/${id}`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token()}` },
+              });
+              showToast("Plugin deleted.");
+              setTimeout(() => (location.href = "/plugin/"), 1200);
+            } catch {
+              showToast("Failed to delete.");
+            }
+          });
+      }
+
+      init();
+    </script>
+  <script>
+/* ===== shared LCEN nav ===== */
+(function(){
+const API="https://network-server-7kuc.onrender.com";
+function tok(){return localStorage.getItem("lcen_token");}
+function prof(){try{return JSON.parse(localStorage.getItem("lcen_profile"));}catch{return null;}}
+function avUrl(xuid){return API+"/avatar/"+xuid;}
+
+let _sd=null,_sa=null;
+
+function buildSearch(el){
+  const wrap=document.createElement("div");
+  wrap.className="nav-search-wrap";
+  wrap.innerHTML='<div class="nav-search"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search players..." id="_nsi" autocomplete="off"></div><div class="nav-sr" id="_nsr"></div>';
+  el.appendChild(wrap);
+  const inp=wrap.querySelector("#_nsi"),res=wrap.querySelector("#_nsr");
+  inp.addEventListener("input",e=>{
+    const q=e.target.value.trim();
+    clearTimeout(_sd);
+    if(!q){res.classList.remove("show");res.innerHTML="";return;}
+    _sd=setTimeout(()=>doSearch(q,res),250);
+  });
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){const q=inp.value.trim();if(q)location.href="/profile/?q="+encodeURIComponent(q);}
+    if(e.key==="Escape"){res.classList.remove("show");inp.blur();}
+  });
+  inp.addEventListener("focus",()=>{if(res.innerHTML.trim())res.classList.add("show");});
+  document.addEventListener("click",e=>{if(!wrap.contains(e.target))res.classList.remove("show");});
+}
+
+async function doSearch(q,res){
+  res.innerHTML='<div class="nav-sr-loading">Searching...</div>';
+  res.classList.add("show");
+  if(_sa)_sa.abort();
+  _sa=new AbortController();
+  try{
+    let players=[];
+    try{
+      const d=await fetch(API+"/players/search?q="+encodeURIComponent(q)+"&scope=all",{signal:_sa.signal,headers:tok()?{Authorization:"Bearer "+tok()}:{}}).then(r=>r.json());
+      players=Array.isArray(d)?d:d.results||[];
+    }catch{players=[];}
+    if(!players.length){
+      res.innerHTML='<div class="nav-sr-empty">No players found for "'+q+'".</div><div class="nav-sr-footer" id="_nsall">View full search</div>';
+    }else{
+      res.innerHTML=players.slice(0,6).map(p=>'<div class="nav-sr-item" data-gt="'+p.gamertag+'"><img src="'+avUrl(p.xuid)+'" onerror="this.style.visibility=\'hidden\'"><div><div class="nav-sr-name">'+p.gamertag+'</div><div class="nav-sr-meta">'+(p.gamerscore||0)+' G</div></div></div>').join('')+'<div class="nav-sr-footer" id="_nsall">View full search</div>';
+      res.querySelectorAll(".nav-sr-item").forEach(it=>it.addEventListener("click",()=>location.href="/profile/?q="+encodeURIComponent(it.dataset.gt)));
+    }
+    const va=res.querySelector("#_nsall");
+    if(va)va.addEventListener("click",()=>location.href="/profile/?q="+encodeURIComponent(q));
+  }catch(e){if(e.name==="AbortError")return;res.innerHTML='<div class="nav-sr-empty">No results.</div>';}
+}
+
+function buildUserMenu(el,p){
+  const av=avUrl(p.xuid);
+  const wrap=document.createElement("div");
+  wrap.className="nav-uw";
+  wrap.innerHTML='<button class="nav-ut"><img src="'+av+'" onerror="this.style.visibility=\'hidden\'"><span class="trig-n">'+p.gamertag+'</span><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><div class="nav-um"><div class="nav-um-hdr"><img src="'+av+'" onerror="this.style.visibility=\'hidden\'"><div><div class="nav-um-name">'+p.gamertag+'</div><div class="nav-um-sub">'+(p.gamerscore||0)+' G</div></div></div><div class="nav-um-links"><a href="/profile/" class="nav-um-link"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a><a href="/dashboard/" class="nav-um-link"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a><a href="/friends/" class="nav-um-link"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Friends</a><a href="/messages/" class="nav-um-link"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Messages</a><a href="/plugin/manage" class="nav-um-link"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Manage Plugins</a><div class="nav-um-div"></div><a href="#" class="nav-um-link danger" id="_nsout"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>Sign Out</a></div></div>';
+  wrap.querySelector(".nav-ut").addEventListener("click",e=>{e.stopPropagation();wrap.classList.toggle("open");});
+  document.addEventListener("click",e=>{if(!wrap.contains(e.target))wrap.classList.remove("open");});
+  wrap.querySelector("#_nsout").addEventListener("click",e=>{e.preventDefault();localStorage.removeItem("lcen_token");localStorage.removeItem("lcen_profile");location.href="/";});
+  el.appendChild(wrap);
+}
+
+function buildNav(){
+  const el=document.getElementById("_nav_actions");
+  if(!el)return;
+  el.innerHTML="";
+  buildSearch(el);
+  const p=prof();
+  if(p){
+    buildUserMenu(el,p);
+  }else{
+    const si=document.createElement("button");si.className="nav-gbtn";si.textContent="Sign In";si.onclick=()=>location.href="/login/";
+    const rg=document.createElement("button");rg.className="nav-pbtn";rg.textContent="Register";rg.onclick=()=>location.href="/register/";
+    el.appendChild(si);el.appendChild(rg);
+  }
+}
+
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",buildNav);
+else buildNav();
+})();
+
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Friends | LCE Network</title>
+<title>LCE Network | Friends</title>
 <link rel="icon" href="/assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -592,6 +592,50 @@ nav {
 
 .confirm-confirm:hover { opacity: 0.82; }
 .confirm-confirm:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ===== shared nav actions (search + user menu) ===== */
+.nav-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.nav-search-wrap{position:relative;}
+.nav-search{display:flex;align-items:center;background:rgba(255,255,255,0.06);border-radius:999px;padding:7px 14px;gap:8px;border:1px solid var(--border);transition:border-color .15s,box-shadow .15s;}
+.nav-search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,195,247,0.12);}
+.nav-search input{border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:0.88rem;color:var(--text);outline:none;width:140px;}
+.nav-search input::placeholder{color:var(--muted);}
+.nav-search svg{color:var(--muted);flex-shrink:0;}
+.nav-sr{position:absolute;top:calc(100% + 10px);left:0;width:280px;background:#13161e;border:1px solid var(--border2);border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,0.5);overflow:hidden;opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .15s,transform .15s;z-index:200;max-height:360px;overflow-y:auto;}
+.nav-sr.show{opacity:1;transform:translateY(0);pointer-events:all;}
+.nav-sr-empty,.nav-sr-loading{padding:18px 16px;font-size:0.85rem;color:var(--muted);text-align:center;}
+.nav-sr-item{display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;transition:background .12s;}
+.nav-sr-item:hover{background:rgba(255,255,255,0.05);}
+.nav-sr-item img{width:32px;height:32px;border-radius:6px;object-fit:cover;background:var(--surface);flex-shrink:0;}
+.nav-sr-name{font-size:0.88rem;font-weight:600;color:var(--text);}
+.nav-sr-meta{font-size:0.74rem;color:var(--muted);}
+.nav-sr-footer{padding:10px 14px;text-align:center;font-size:0.8rem;font-weight:600;color:var(--accent);border-top:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.nav-sr-footer:hover{background:rgba(255,255,255,0.04);}
+.nav-uw{position:relative;}
+.nav-ut{display:flex;align-items:center;gap:8px;background:transparent;border:1px solid transparent;border-radius:999px;padding:4px 10px 4px 4px;cursor:pointer;transition:background .15s,border-color .15s;}
+.nav-ut:hover{background:rgba(255,255,255,0.06);border-color:var(--border);}
+.nav-ut img{width:30px;height:30px;border-radius:6px;object-fit:cover;background:var(--surface);flex-shrink:0;}
+.nav-ut .trig-n{font-size:0.85rem;font-weight:600;color:var(--text);max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-ut svg{color:var(--muted);transition:transform .15s;flex-shrink:0;}
+.nav-uw.open .nav-ut svg{transform:rotate(180deg);}
+.nav-um{position:absolute;top:calc(100% + 10px);right:0;width:220px;background:#13161e;border:1px solid var(--border2);border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,0.5);overflow:hidden;opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .15s,transform .15s;z-index:200;}
+.nav-uw.open .nav-um{opacity:1;transform:translateY(0);pointer-events:all;}
+.nav-um-hdr{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid var(--border);}
+.nav-um-hdr img{width:38px;height:38px;border-radius:7px;object-fit:cover;background:var(--surface);flex-shrink:0;}
+.nav-um-name{font-size:0.92rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-um-sub{font-size:0.74rem;color:var(--gold);}
+.nav-um-links{padding:6px;}
+.nav-um-link{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:5px;font-size:0.86rem;font-weight:500;color:var(--text);transition:background .12s;}
+.nav-um-link:hover{background:rgba(255,255,255,0.06);}
+.nav-um-link svg{color:var(--muted);flex-shrink:0;}
+.nav-um-div{height:1px;background:var(--border);margin:6px 0;}
+.nav-um-link.danger{color:#ef5350;}
+.nav-um-link.danger svg{color:#ef5350;}
+.nav-gbtn{background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;padding:7px 16px;cursor:pointer;transition:color .15s,background .15s;}
+.nav-gbtn:hover{color:var(--text);background:rgba(255,255,255,0.06);}
+.nav-pbtn{background:var(--accent);border:none;border-radius:6px;color:#000;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:700;padding:7px 16px;cursor:pointer;transition:opacity .15s;}
+.nav-pbtn:hover{opacity:0.85;}
+
 </style>
 </head>
 <body>
@@ -623,21 +667,16 @@ nav {
     <span class="nav-logo-text">LCE Network</span>
   </a>
   <div class="nav-links">
-        <a href="/" class="nav-link"><i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Home</a>
-    <a href="/download/" class="nav-link"><i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Download</a>
+    <a href="/" class="nav-link"><i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Home</a>
     <a href="/dashboard/" class="nav-link">Dashboard</a>
     <a href="/messages/" class="nav-link">Messages</a>
-    <a href="/profile/" class="nav-link">My Profile</a>
-    <a href="/friends/" class="nav-link active">My Friends</a>
+    <a href="/profile/" class="nav-link">Profile</a>
+    <a href="/friends/" class="nav-link active">Friends</a>
+    <a href="/plugin/" class="nav-link">Plugins</a>
+    <a href="/servers/" class="nav-link">Servers</a>
     <a href="/leaderboards/" class="nav-link">Leaderboards</a>
   </div>
-  <div class="nav-user" id="navUser" style="display:none">
-    <div class="nav-avatar"><img id="navAvatarImg" src="" alt=""></div>
-    <div>
-      <div class="nav-gamertag" id="navGamertag"></div>
-      <div class="nav-gs" id="navGs"></div>
-    </div>
-  </div>
+  <div class="nav-actions" id="_nav_actions"></div>
 </nav>
 
 <div class="page">
@@ -739,10 +778,6 @@ nav {
 
   const p = myP();
   if (p) {
-    document.getElementById("navUser").style.display = "";
-    document.getElementById("navAvatarImg").src = avUrl(p.xuid);
-    document.getElementById("navGamertag").textContent = p.gamertag;
-    document.getElementById("navGs").textContent = `${p.gamerscore || 0} G`;
   }
 
   document.querySelectorAll(".f-tab").forEach(tab => {
@@ -994,6 +1029,89 @@ nav {
   if (img1.complete) onLoad();
   else img1.addEventListener("load", onLoad);
 })();
+</script>
+<script>
+/* ===== shared LCEN nav ===== */
+(function(){
+const API="https://network-server-7kuc.onrender.com";
+function tok(){return localStorage.getItem("lcen_token");}
+function prof(){try{return JSON.parse(localStorage.getItem("lcen_profile"));}catch{return null;}}
+function avUrl(xuid){return API+"/avatar/"+xuid;}
+
+let _sd=null,_sa=null;
+
+function buildSearch(el){
+  const wrap=document.createElement("div");
+  wrap.className="nav-search-wrap";
+  wrap.innerHTML='<div class="nav-search"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search players..." id="_nsi" autocomplete="off"></div><div class="nav-sr" id="_nsr"></div>';
+  el.appendChild(wrap);
+  const inp=wrap.querySelector("#_nsi"),res=wrap.querySelector("#_nsr");
+  inp.addEventListener("input",e=>{
+    const q=e.target.value.trim();
+    clearTimeout(_sd);
+    if(!q){res.classList.remove("show");res.innerHTML="";return;}
+    _sd=setTimeout(()=>doSearch(q,res),250);
+  });
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){const q=inp.value.trim();if(q)location.href="/profile/?q="+encodeURIComponent(q);}
+    if(e.key==="Escape"){res.classList.remove("show");inp.blur();}
+  });
+  inp.addEventListener("focus",()=>{if(res.innerHTML.trim())res.classList.add("show");});
+  document.addEventListener("click",e=>{if(!wrap.contains(e.target))res.classList.remove("show");});
+}
+
+async function doSearch(q,res){
+  res.innerHTML='<div class="nav-sr-loading">Searching...</div>';
+  res.classList.add("show");
+  if(_sa)_sa.abort();
+  _sa=new AbortController();
+  try{
+    let players=[];
+    try{
+      const d=await fetch(API+"/players/search?q="+encodeURIComponent(q)+"&scope=all",{signal:_sa.signal,headers:tok()?{Authorization:"Bearer "+tok()}:{}}).then(r=>r.json());
+      players=Array.isArray(d)?d:d.results||[];
+    }catch{players=[];}
+    if(!players.length){
+      res.innerHTML='<div class="nav-sr-empty">No players found for "'+q+'".</div><div class="nav-sr-footer" id="_nsall">View full search</div>';
+    }else{
+      res.innerHTML=players.slice(0,6).map(p=>'<div class="nav-sr-item" data-gt="'+p.gamertag+'"><img src="'+avUrl(p.xuid)+'" onerror="this.style.visibility=\'hidden\'"><div><div class="nav-sr-name">'+p.gamertag+'</div><div class="nav-sr-meta">'+(p.gamerscore||0)+' G</div></div></div>').join('')+'<div class="nav-sr-footer" id="_nsall">View full search</div>';
+      res.querySelectorAll(".nav-sr-item").forEach(it=>it.addEventListener("click",()=>location.href="/profile/?q="+encodeURIComponent(it.dataset.gt)));
+    }
+    const va=res.querySelector("#_nsall");
+    if(va)va.addEventListener("click",()=>location.href="/profile/?q="+encodeURIComponent(q));
+  }catch(e){if(e.name==="AbortError")return;res.innerHTML='<div class="nav-sr-empty">No results.</div>';}
+}
+
+function buildUserMenu(el,p){
+  const av=avUrl(p.xuid);
+  const wrap=document.createElement("div");
+  wrap.className="nav-uw";
+  wrap.innerHTML='<button class="nav-ut"><img src="'+av+'" onerror="this.style.visibility=\'hidden\'"><span class="trig-n">'+p.gamertag+'</span><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><div class="nav-um"><div class="nav-um-hdr"><img src="'+av+'" onerror="this.style.visibility=\'hidden\'"><div><div class="nav-um-name">'+p.gamertag+'</div><div class="nav-um-sub">'+(p.gamerscore||0)+' G</div></div></div><div class="nav-um-links"><a href="/profile/" class="nav-um-link"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a><a href="/dashboard/" class="nav-um-link"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</a><a href="/friends/" class="nav-um-link"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Friends</a><a href="/messages/" class="nav-um-link"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Messages</a><a href="/plugin/manage" class="nav-um-link"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Manage Plugins</a><div class="nav-um-div"></div><a href="#" class="nav-um-link danger" id="_nsout"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>Sign Out</a></div></div>';
+  wrap.querySelector(".nav-ut").addEventListener("click",e=>{e.stopPropagation();wrap.classList.toggle("open");});
+  document.addEventListener("click",e=>{if(!wrap.contains(e.target))wrap.classList.remove("open");});
+  wrap.querySelector("#_nsout").addEventListener("click",e=>{e.preventDefault();localStorage.removeItem("lcen_token");localStorage.removeItem("lcen_profile");location.href="/";});
+  el.appendChild(wrap);
+}
+
+function buildNav(){
+  const el=document.getElementById("_nav_actions");
+  if(!el)return;
+  el.innerHTML="";
+  buildSearch(el);
+  const p=prof();
+  if(p){
+    buildUserMenu(el,p);
+  }else{
+    const si=document.createElement("button");si.className="nav-gbtn";si.textContent="Sign In";si.onclick=()=>location.href="/login/";
+    const rg=document.createElement("button");rg.className="nav-pbtn";rg.textContent="Register";rg.onclick=()=>location.href="/register/";
+    el.appendChild(si);el.appendChild(rg);
+  }
+}
+
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",buildNav);
+else buildNav();
+})();
+
 </script>
 </body>
 </html>

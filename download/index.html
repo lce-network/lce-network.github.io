@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Download - LCE Network</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+    <link rel="icon" href="/assets/logo.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+    <style>
+      .dl-hero {
+        position: relative;
+        height: 320px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .dl-hero-bg {
+        position: absolute;
+        inset: 0;
+        background: url('/assets/images/panorama.png') center/cover no-repeat;
+        filter: brightness(0.45);
+        transform: scale(1.04);
+      }
+
+      .dl-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.55) 100%);
+      }
+
+      .dl-hero-content {
+        position: relative;
+        z-index: 2;
+        padding: 0 32px;
+      }
+
+      .dl-hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 12px;
+      }
+
+      .dl-hero-title {
+        font-family: var(--font-display);
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 0.5px;
+        line-height: 1.08;
+        margin-bottom: 10px;
+      }
+
+      .dl-hero-sub {
+        font-size: 0.95rem;
+        color: rgba(255,255,255,0.6);
+        max-width: 440px;
+        margin: 0 auto;
+        line-height: 1.5;
+      }
+
+      .dl-body {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 32px 48px;
+      }
+
+      .dl-section-divider {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 28px 0 0;
+      }
+
+      .dl-section-divider-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+
+      .dl-section-divider-line {
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      /* ---- launcher cards ---- */
+      .dl-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        padding-top: 16px;
+      }
+
+      .dl-layout-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+        padding-top: 16px;
+      }
+
+      .dl-panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .dl-panel-figure {
+        position: relative;
+        height: 130px;
+        overflow: hidden;
+        background: #0a0a1a;
+        flex-shrink: 0;
+      }
+
+      .dl-panel-figure-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.38;
+      }
+
+      .dl-panel-figure-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.55) 100%);
+      }
+
+      .dl-panel-figure-char {
+        position: absolute;
+        bottom: 0;
+        height: 120px;
+        object-fit: contain;
+        z-index: 2;
+        image-rendering: pixelated;
+      }
+
+      .dl-figure-char-right { right: 10px; }
+      .dl-figure-char-left  { left: 10px; }
+
+      .dl-panel-figure-logo {
+        position: absolute;
+        z-index: 3;
+        max-height: 52px;
+        max-width: 55%;
+        object-fit: contain;
+        bottom: 12px;
+        left: 16px;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.7));
+      }
+
+      .dl-panel-body {
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        flex: 1;
+      }
+
+      .dl-panel-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .dl-panel-name {
+        font-family: var(--font-display);
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
+        flex: 1;
+      }
+
+      .dl-panel-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 999px;
+        flex-shrink: 0;
+      }
+
+      .dl-panel-badge.recommended {
+        background: rgba(34,197,94,0.12);
+        color: #15803d;
+        border: 1px solid rgba(34,197,94,0.25);
+      }
+
+      .dl-panel-badge.partnered {
+        background: rgba(168,139,250,0.12);
+        color: #7c3aed;
+        border: 1px solid rgba(168,139,250,0.25);
+      }
+
+      .dl-panel-badge.tool {
+        background: rgba(0,112,209,0.10);
+        color: var(--blue);
+        border: 1px solid rgba(0,112,209,0.2);
+      }
+
+      .dl-panel-desc {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      .dl-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+
+      .dl-tag {
+        font-size: 0.66rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        background: var(--surface2);
+        padding: 2px 7px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+      }
+
+      .dl-actions {
+        display: flex;
+        gap: 7px;
+        margin-top: auto;
+        padding-top: 2px;
+      }
+
+      .dl-btn {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-family: var(--font-body);
+        font-size: 0.83rem;
+        font-weight: 600;
+        padding: 9px 14px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+        white-space: nowrap;
+      }
+
+      .dl-btn-primary {
+        background: var(--blue);
+        color: #fff;
+      }
+
+      .dl-btn-primary:hover {
+        background: var(--blue-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(0,112,209,0.28);
+      }
+
+      .dl-btn-ghost {
+        background: transparent;
+        color: var(--text-muted);
+        border: 1.5px solid var(--border);
+        flex: unset;
+        padding: 9px 12px;
+      }
+
+      .dl-btn-ghost:hover {
+        background: var(--surface2);
+        color: var(--text);
+      }
+
+      /* ---- server grid ---- */
+      .dl-server-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        padding-top: 16px;
+      }
+
+      .dl-server-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: border-color var(--transition), box-shadow var(--transition);
+      }
+
+      .dl-server-card:hover {
+        border-color: rgba(0,112,209,0.3);
+        box-shadow: 0 4px 20px rgba(0,112,209,0.07);
+      }
+
+      .dl-server-card.lcen {
+        border-color: rgba(0,112,209,0.2);
+      }
+
+      .dl-server-figure {
+        height: 72px;
+        position: relative;
+        overflow: hidden;
+        background: #0a0a14;
+      }
+
+      .dl-server-figure-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.25;
+      }
+
+      .dl-server-figure-icon {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        color: rgba(255,255,255,0.55);
+      }
+
+      .dl-server-body {
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+      }
+
+      .dl-server-name {
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .dl-server-desc {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        line-height: 1.45;
+        flex: 1;
+      }
+
+      .dl-server-actions {
+        display: flex;
+        gap: 6px;
+      }
+
+      /* ---- req row ---- */
+      .dl-req-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding-top: 16px;
+        padding-bottom: 8px;
+      }
+
+      .dl-req-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 14px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        flex: 1;
+        min-width: 140px;
+      }
+
+      .dl-req-icon {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        width: 18px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .dl-req-label {
+        font-size: 0.66rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-light);
+        margin-bottom: 1px;
+      }
+
+      .dl-req-val {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      /* ---- grayed-out / unavailable ---- */
+      .dl-unavailable {
+        position: relative;
+        opacity: 0.45;
+        pointer-events: none;
+        filter: grayscale(0.4);
+      }
+
+      .dl-unavailable-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 10;
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: rgba(0,0,0,0.55);
+        color: rgba(255,255,255,0.75);
+        border: 1px solid rgba(255,255,255,0.15);
+        pointer-events: none;
+      }
+
+      /* server cards need relative positioning for the badge */
+      .dl-server-card.dl-unavailable {
+        position: relative;
+      }
+
+      @media (max-width: 900px) {
+        .dl-server-grid { grid-template-columns: 1fr 1fr; }
+        .dl-layout-3 { grid-template-columns: 1fr 1fr; }
+      }
+
+      @media (max-width: 700px) {
+        .dl-layout { grid-template-columns: 1fr; }
+        .dl-layout-3 { grid-template-columns: 1fr; }
+        .dl-server-grid { grid-template-columns: 1fr 1fr; }
+        .dl-hero { height: 240px; }
+        .dl-hero-title { font-size: 2rem; }
+        .dl-body { padding: 0 16px 36px; }
+      }
+
+      @media (max-width: 480px) {
+        .dl-server-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">
+        <img src="/assets/logo.png" alt="LCEN" />
+        <span class="nav-logo-text">LCE Network</span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/download/" class="nav-link active">Download</a>
+        <a href="/plugin/" class="nav-link">Plugins</a>
+        <a href="/servers/" class="nav-link">Servers</a>
+        <a href="/leaderboards/" class="nav-link">Leaderboards</a>
+        <a href="/dashboard/" class="nav-link"><i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Dashboard</a>
+      </div>
+      <div class="nav-actions"></div>
+    </nav>
+
+    <div class="dl-hero">
+      <div class="dl-hero-bg"></div>
+      <div class="dl-hero-overlay"></div>
+      <div class="dl-hero-content">
+        <div class="dl-hero-eyebrow"><i class="fa-solid fa-download"></i> Downloads</div>
+        <h1 class="dl-hero-title">Get LCE Network</h1>
+        <p class="dl-hero-sub">Launchers, tools, and server software for Legacy Console Edition.</p>
+      </div>
+    </div>
+
+    <div class="dl-body page-fade">
+
+      <!-- LAUNCHERS -->
+      <div class="dl-section-divider">
+        <span class="dl-section-divider-label">Launchers</span>
+        <div class="dl-section-divider-line"></div>
+      </div>
+
+      <div class="dl-layout">
+
+        <!-- LCE Network Client — GRAYED OUT -->
+        <div class="dl-panel dl-unavailable">
+          <span class="dl-unavailable-badge">Coming Soon</span>
+          <div class="dl-panel-figure" style="background: linear-gradient(135deg, #0a0a1a 0%, #0d1a2e 100%);">
+            <img class="dl-panel-figure-bg" src="/assets/images/panorama.png" alt="">
+            <div class="dl-panel-figure-overlay"></div>
+            <img class="dl-panel-figure-char dl-figure-char-right" src="/assets/images/char1.png" alt="">
+            <img class="dl-panel-figure-logo" src="/assets/logo.png" alt="LCE Network Client">
+          </div>
+          <div class="dl-panel-body">
+            <div class="dl-panel-meta">
+              <span class="dl-panel-name">LCE Network Client</span>
+              <span class="dl-panel-badge tool">Client / Game</span>
+            </div>
+            <p class="dl-panel-desc">The LCE Network game client. Connect to LCEN servers and authenticate with your account to use networking features.</p>
+            <div class="dl-tags">
+              <span class="dl-tag">Windows</span>
+              <span class="dl-tag">LCEN Authentication</span>
+            </div>
+            <div class="dl-actions">
+              <a class="dl-btn dl-btn-primary" href="#">
+                <i class="fa-solid fa-download"></i> Download
+              </a>
+              <a class="dl-btn dl-btn-ghost" href="#">
+                <i class="fa-brands fa-github"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- LCEN Launcher — GRAYED OUT -->
+        <div class="dl-panel dl-unavailable">
+          <span class="dl-unavailable-badge">Coming Soon</span>
+          <div class="dl-panel-figure" style="background: linear-gradient(135deg, #060d1a 0%, #0a1a30 100%);">
+            <img class="dl-panel-figure-bg" src="/assets/images/ps3.png" alt="">
+            <div class="dl-panel-figure-overlay"></div>
+            <img class="dl-panel-figure-char dl-figure-char-left" src="/assets/images/char2.png" alt="">
+          </div>
+          <div class="dl-panel-body">
+            <div class="dl-panel-meta">
+              <span class="dl-panel-name">LCEN Launcher</span>
+              <span class="dl-panel-badge recommended">Recommended</span>
+            </div>
+            <p class="dl-panel-desc">The most reliable launcher for LCEN Authentication and client connection. Updates directly with backend changes.</p>
+            <div class="dl-tags">
+              <span class="dl-tag">Windows</span>
+              <span class="dl-tag">Auto-update</span>
+            </div>
+            <div class="dl-actions">
+              <a class="dl-btn dl-btn-primary" href="#">
+                <i class="fa-solid fa-download"></i> Download
+              </a>
+              <a class="dl-btn dl-btn-ghost" href="#">
+                <i class="fa-brands fa-github"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- LCE EMERALD LAUNCHER -->
+      <div class="dl-section-divider" style="padding-top:20px;">
+        <span class="dl-section-divider-label">Also Available</span>
+        <div class="dl-section-divider-line"></div>
+      </div>
+
+      <div class="dl-layout" style="grid-template-columns: 1fr 1fr;">
+        <div class="dl-panel">
+          <div class="dl-panel-figure" style="background: linear-gradient(135deg, #0d1a0d 0%, #0a3d0a 100%);">
+            <img class="dl-panel-figure-bg" src="/assets/images/emerald.png" alt="">
+            <div class="dl-panel-figure-overlay"></div>
+            <img class="dl-panel-figure-logo" src="/assets/images/lceemerald.png" alt="LCE Emerald Launcher">
+          </div>
+          <div class="dl-panel-body">
+            <div class="dl-panel-meta">
+              <span class="dl-panel-name">LCE Emerald Launcher</span>
+              <span class="dl-panel-badge partnered">Partnered</span>
+            </div>
+            <p class="dl-panel-desc">A partnered third-party launcher with custom DLC and best support for LCE. Also supports LCE Network authentication.</p>
+            <div class="dl-tags">
+              <span class="dl-tag">Windows</span>
+              <span class="dl-tag">Custom DLC</span>
+            </div>
+            <div class="dl-actions">
+              <a class="dl-btn dl-btn-primary" href="https://github.com/LCE-Hub/LCE-Emerald-Launcher/releases/latest" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-github"></i> Download
+              </a>
+              <a class="dl-btn dl-btn-ghost" href="/docs/launcher/">
+                <i class="fa-solid fa-book"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVER SOFTWARE -->
+      <div class="dl-section-divider" style="padding-top:20px;">
+        <span class="dl-section-divider-label">Server Software</span>
+        <div class="dl-section-divider-line"></div>
+      </div>
+
+      <div class="dl-server-grid">
+
+        <!-- Vanilla — GRAYED OUT -->
+        <div class="dl-server-card dl-unavailable">
+          <span class="dl-unavailable-badge">Coming Soon</span>
+          <div class="dl-server-figure">
+            <img class="dl-server-figure-bg" src="/assets/images/panorama.png" alt="">
+            <div class="dl-server-figure-icon"><i class="fa-solid fa-server"></i></div>
+          </div>
+          <div class="dl-server-body">
+            <div class="dl-server-name">Vanilla</div>
+            <p class="dl-server-desc">Standard LCE server software. No modifications, pure LCE multiplayer.</p>
+            <div class="dl-tags" style="margin-bottom:4px;">
+              <span class="dl-tag">Windows</span>
+              <span class="dl-tag">Linux</span>
+            </div>
+            <div class="dl-server-actions">
+              <a class="dl-btn dl-btn-primary" href="#" style="font-size:0.78rem;padding:8px 12px;">
+                <i class="fa-solid fa-download"></i> Download
+              </a>
+              <a class="dl-btn dl-btn-ghost" href="#" style="font-size:0.78rem;padding:8px 10px;">
+                <i class="fa-brands fa-github"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- FourKit — GRAYED OUT -->
+        <div class="dl-server-card dl-unavailable">
+          <span class="dl-unavailable-badge">Coming Soon</span>
+          <div class="dl-server-figure" style="background:#0d0a1a;">
+            <img class="dl-server-figure-bg" src="/assets/images/panorama.png" alt="">
+            <div class="dl-server-figure-icon"><i class="fa-solid fa-wrench"></i></div>
+          </div>
+          <div class="dl-server-body">
+            <div class="dl-server-name">FourKit</div>
+            <p class="dl-server-desc">Extended server software with plugin support and additional features for server owners.</p>
+            <div class="dl-tags" style="margin-bottom:4px;">
+              <span class="dl-tag">Windows</span>
+              <span class="dl-tag">Linux</span>
+              <span class="dl-tag">Plugins</span>
+            </div>
+            <div class="dl-server-actions">
+              <a class="dl-btn dl-btn-primary" href="#" style="font-size:0.78rem;padding:8px 12px;">
+                <i class="fa-solid fa-download"></i> Download
+              </a>
+              <a class="dl-btn dl-btn-ghost" href="#" style="font-size:0.78rem;padding:8px 10px;">
+                <i class="fa-brands fa-github"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- LCEN Vanilla — GRAYED OUT -->
+        <div class="dl-server-card lcen dl-unavailable">
+          <span class="dl-unavailable-badge">Coming Soon</span>
+          <div class="dl-server-figure" style="background:#070d1a;">
+            <img class="dl-server-figure-bg" src="/assets/images/panorama.png" alt="">
+            <div class="dl-server-figure-icon" style="color:rgba(0,112,209,0.7);"><i class="fa-solid fa-server"></i></div>
+          </div>
+          <div class="dl-server-body">
+            <div class="dl-server-name">LCEN Vanilla</div>
+            <p class="dl-server-desc">Vanilla server with full LCEN integration: auth, leaderboards, and player tracking.</p>
+            <div class="dl-tags" style="margin-bottom:4px;">
+              <span class="dl-tag">Windows</span>
+              <span class="dl-tag">Linux</span>
+              <span class="dl-tag">LCEN Auth</span>
+            </div>
+            <div class="dl-server-actions">
+              <a class="dl-btn dl-btn-primary" href="#" style="font-size:0.78rem;padding:8px 12px;">
+                <i class="fa-solid fa-download"></i> Download
+              </a>
+              <a class="dl-btn dl-btn-ghost" href="#" style="font-size:0.78rem;padding:8px 10px;">
+                <i class="fa-brands fa-github"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- LCEN FourKit — GRAYED OUT -->
+        <div class="dl-server-card lcen dl-unavailable">
+          <span class="dl-unavailable-badge">Coming Soon</span>
+          <div class="dl-server-figure" style="background:#07101a;">
+            <img class="dl-server-figure-bg" src="/assets/images/panorama.png" alt="">
+            <div class="dl-server-figure-icon" style="color:rgba(0,112,209,0.7);"><i class="fa-solid fa-wrench"></i></div>
+          </div>
+          <div class="dl-server-body">
+            <div class="dl-server-name">LCEN FourKit</div>
+            <p class="dl-server-desc">FourKit with full LCEN integration. The most feature-complete option for LCEN server owners.</p>
+            <div class="dl-tags" style="margin-bottom:4px;">
+              <span class="dl-tag">Windows</span>
+              <span class="dl-tag">Linux</span>
+              <span class="dl-tag">Plugins</span>
+              <span class="dl-tag">LCEN Auth</span>
+            </div>
+            <div class="dl-server-actions">
+              <a class="dl-btn dl-btn-primary" href="#" style="font-size:0.78rem;padding:8px 12px;">
+                <i class="fa-solid fa-download"></i> Download
+              </a>
+              <a class="dl-btn dl-btn-ghost" href="#" style="font-size:0.78rem;padding:8px 10px;">
+                <i class="fa-brands fa-github"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- REQUIREMENTS -->
+      <div class="dl-section-divider" style="padding-top:20px;">
+        <span class="dl-section-divider-label">Requirements</span>
+        <div class="dl-section-divider-line"></div>
+      </div>
+
+      <div class="dl-req-row">
+        <div class="dl-req-item">
+          <div class="dl-req-icon"><i class="fa-brands fa-windows"></i></div>
+          <div>
+            <div class="dl-req-label">OS</div>
+            <div class="dl-req-val">Windows, Linux</div>
+          </div>
+        </div>
+        <div class="dl-req-item">
+          <div class="dl-req-icon"><i class="fa-solid fa-microchip"></i></div>
+          <div>
+            <div class="dl-req-label">Architecture</div>
+            <div class="dl-req-val">x64</div>
+          </div>
+        </div>
+        <div class="dl-req-item">
+          <div class="dl-req-icon"><i class="fa-brands fa-github"></i></div>
+          <div>
+            <div class="dl-req-label">Source</div>
+            <div class="dl-req-val">All projects on GitHub</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <img src="/assets/logo.png" alt="LCEN" />
+            <span class="footer-logo-text">LCEN</span>
+          </div>
+          <p class="footer-tagline">The dedicated network for Minecraft Legacy Console Edition.</p>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Network</div>
+          <a href="/">Home</a>
+          <a href="/download/">Download</a>
+          <a href="/profile/">Profile</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Account</div>
+          <a href="/login/">Sign In</a>
+          <a href="/register/">Register</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Legal</div>
+          <a href="#">Terms</a>
+          <a href="#">Privacy</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>2026 LCEN: Legacy Console Edition Network.</span>
+        <span>Not affiliated with Mojang, Microsoft or 4J Studios.</span>
+      </div>
+    </footer>
+
+    <script src="/assets/app.js"></script>
+    <script>LCEN.buildNav();</script>
+  </body>
+</html>

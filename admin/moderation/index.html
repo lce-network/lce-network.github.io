@@ -1,0 +1,1546 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moderation | LCE Network</title>
+    <link rel="icon" href="/assets/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #0a0c10;
+        --surface: rgba(255, 255, 255, 0.04);
+        --surface2: rgba(255, 255, 255, 0.07);
+        --border: rgba(255, 255, 255, 0.08);
+        --border2: rgba(255, 255, 255, 0.14);
+        --text: #e8eaf0;
+        --muted: #7a8090;
+        --accent: #4fc3f7;
+        --accent2: #81c784;
+        --gold: #ffd54f;
+        --red: #ef5350;
+        --amber: #ffb300;
+        --nav-h: 56px;
+      }
+      html,
+      body {
+        min-height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 15px;
+        line-height: 1.5;
+        overflow-x: hidden;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .panorama-wrap {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .panorama-track {
+        display: flex;
+        height: 100%;
+        will-change: transform;
+      }
+      .panorama-img {
+        height: 100%;
+        width: auto;
+        min-width: 100vw;
+        object-fit: cover;
+        flex-shrink: 0;
+        filter: blur(3px) brightness(0.38) saturate(0.7);
+        transform: scale(1.04);
+      }
+      .panorama-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(10, 12, 16, 0.3) 0%,
+          rgba(10, 12, 16, 0.1) 40%,
+          rgba(10, 12, 16, 0.55) 100%
+        );
+      }
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--nav-h);
+        background: rgba(10, 12, 16, 0.85);
+        backdrop-filter: blur(18px);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 28px;
+        gap: 32px;
+        z-index: 100;
+      }
+      .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+      }
+      .nav-logo img {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+      }
+      .nav-logo-text {
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 700;
+        font-size: 1.15rem;
+        letter-spacing: 0.04em;
+      }
+      .nav-links {
+        display: flex;
+        gap: 4px;
+        flex: 1;
+      }
+      .nav-link {
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.88rem;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        padding: 6px 14px;
+        border-radius: 4px;
+        transition:
+          color 0.15s,
+          background 0.15s;
+      }
+      .nav-link:hover {
+        color: var(--text);
+        background: var(--surface);
+      }
+      .nav-link.active {
+        color: var(--accent);
+      }
+      .nav-user {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+      }
+      .nav-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .nav-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .nav-gamertag {
+        font-family: "DM Sans", sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 0.04em;
+      }
+      .nav-gs {
+        font-size: 0.78rem;
+        color: var(--gold);
+        font-weight: 500;
+      }
+      .page {
+        position: relative;
+        z-index: 1;
+        padding-top: calc(var(--nav-h) + 28px);
+        padding-bottom: 80px;
+        min-height: 100vh;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        animation: fadeUp 0.4s ease both;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .panel {
+        background: rgba(10, 12, 16, 0.72);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        backdrop-filter: blur(12px);
+        overflow: hidden;
+      }
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        background: rgba(10, 12, 16, 0.72);
+        border: 1px solid rgba(239, 83, 80, 0.15);
+        border-radius: 8px;
+        backdrop-filter: blur(12px);
+      }
+      .page-title {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .admin-badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 3px 9px;
+        border-radius: 3px;
+        background: rgba(239, 83, 80, 0.12);
+        color: var(--red);
+        border: 1px solid rgba(239, 83, 80, 0.25);
+      }
+      .page-subtitle {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .btn-refresh {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        color: var(--muted);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .btn-refresh:hover {
+        background: var(--surface2);
+        color: var(--text);
+      }
+      .stats-strip {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+      .stat-tile {
+        background: rgba(10, 12, 16, 0.72);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        backdrop-filter: blur(12px);
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .stat-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+      }
+      .stat-icon.pending {
+        background: rgba(255, 179, 0, 0.08);
+        color: var(--amber);
+      }
+      .stat-icon.approved {
+        background: rgba(129, 199, 132, 0.08);
+        color: var(--accent2);
+      }
+      .stat-icon.rejected {
+        background: rgba(239, 83, 80, 0.08);
+        color: var(--red);
+      }
+      .stat-icon.total {
+        background: rgba(79, 195, 247, 0.08);
+        color: var(--accent);
+      }
+      .stat-val {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 1.55rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        line-height: 1;
+      }
+      .stat-lbl {
+        font-size: 0.7rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-top: 2px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 14px;
+        align-items: start;
+      }
+      .filter-nav {
+        list-style: none;
+        padding: 8px 0;
+      }
+      .filter-link {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 14px;
+        color: var(--muted);
+        font-size: 0.84rem;
+        cursor: pointer;
+        transition: all 0.12s;
+        border-left: 2px solid transparent;
+      }
+      .filter-link:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .filter-link.active {
+        color: var(--text);
+        border-left-color: var(--accent);
+        background: rgba(79, 195, 247, 0.05);
+      }
+      .filter-link.active.f-pending {
+        border-left-color: var(--amber);
+        color: var(--amber);
+      }
+      .filter-link.active.f-approved {
+        border-left-color: var(--accent2);
+        color: var(--accent2);
+      }
+      .filter-link.active.f-rejected {
+        border-left-color: var(--red);
+        color: var(--red);
+      }
+      .filter-count {
+        margin-left: auto;
+        font-size: 0.7rem;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        padding: 1px 6px;
+        color: var(--muted);
+      }
+      .sidebar-section-lbl {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        padding: 12px 14px 5px;
+      }
+      .content-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--border);
+      }
+      .content-title {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .content-sub {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 1px;
+      }
+      .sub-card {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.12s;
+        position: relative;
+      }
+      .sub-card:last-child {
+        border-bottom: none;
+      }
+      .sub-card:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .sub-status-bar {
+        width: 3px;
+        flex-shrink: 0;
+      }
+      .sub-status-bar.pending {
+        background: var(--amber);
+      }
+      .sub-status-bar.approved {
+        background: var(--accent2);
+      }
+      .sub-status-bar.rejected {
+        background: var(--red);
+      }
+      .sub-icon {
+        width: 90px;
+        height: 90px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        flex-shrink: 0;
+        background: var(--surface);
+        align-self: center;
+        margin: 14px 0 14px 14px;
+      }
+      .sub-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .sub-main {
+        flex: 1;
+        padding: 13px 14px;
+        min-width: 0;
+      }
+      .sub-name {
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.92rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+      }
+      .sub-desc {
+        font-size: 0.79rem;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .sub-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 6px;
+      }
+      .sub-badge {
+        font-size: 0.67rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 2px 7px;
+        border-radius: 3px;
+      }
+      .sub-badge.pending {
+        background: rgba(255, 179, 0, 0.1);
+        color: var(--amber);
+        border: 1px solid rgba(255, 179, 0, 0.2);
+      }
+      .sub-badge.approved {
+        background: rgba(129, 199, 132, 0.1);
+        color: var(--accent2);
+        border: 1px solid rgba(129, 199, 132, 0.2);
+      }
+      .sub-badge.rejected {
+        background: rgba(239, 83, 80, 0.1);
+        color: var(--red);
+        border: 1px solid rgba(239, 83, 80, 0.2);
+      }
+      .sub-meta-item {
+        font-size: 0.73rem;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .sub-meta-item i {
+        font-size: 0.65rem;
+      }
+      .sub-actions {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        justify-content: center;
+        padding: 12px 14px;
+        border-left: 1px solid var(--border);
+        min-width: 130px;
+      }
+      .action-btn {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        color: var(--muted);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 6px 10px;
+        cursor: pointer;
+        transition: all 0.12s;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+      .action-btn:hover {
+        background: var(--surface2);
+        color: var(--text);
+      }
+      .action-btn.approve:hover {
+        border-color: rgba(129, 199, 132, 0.4);
+        color: var(--accent2);
+        background: rgba(129, 199, 132, 0.08);
+      }
+      .action-btn.reject:hover {
+        border-color: rgba(239, 83, 80, 0.4);
+        color: var(--red);
+        background: rgba(239, 83, 80, 0.07);
+      }
+      .action-btn.detail:hover {
+        border-color: rgba(79, 195, 247, 0.3);
+        color: var(--accent);
+        background: rgba(79, 195, 247, 0.07);
+      }
+      .list-empty {
+        padding: 52px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+      .detail-overlay,
+      .reject-overlay,
+      .access-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 500;
+        align-items: center;
+        justify-content: center;
+      }
+      .detail-overlay.open,
+      .reject-overlay.open,
+      .access-overlay.open {
+        display: flex;
+      }
+      .modal-box {
+        background: #0d1016;
+        border: 1px solid var(--border2);
+        border-radius: 10px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        max-height: 85vh;
+        overflow: hidden;
+      }
+      .modal-box.detail-box {
+        width: 700px;
+        max-width: 92vw;
+      }
+      .modal-box.reject-box {
+        width: 480px;
+        max-width: 92vw;
+      }
+      .modal-box.access-box {
+        width: 400px;
+        max-width: 92vw;
+      }
+      .modal-header {
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+      .modal-title {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 1.1rem;
+        padding: 0;
+        transition: color 0.15s;
+      }
+      .modal-close:hover {
+        color: var(--text);
+      }
+      .modal-body {
+        padding: 18px;
+        overflow-y: auto;
+        flex: 1;
+      }
+      .modal-footer {
+        padding: 12px 18px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        flex-shrink: 0;
+      }
+      .detail-section {
+        margin-bottom: 16px;
+      }
+      .detail-section:last-child {
+        margin-bottom: 0;
+      }
+      .detail-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .detail-value {
+        font-size: 0.86rem;
+        color: var(--text);
+        line-height: 1.5;
+      }
+      .detail-value a {
+        color: var(--accent);
+      }
+      .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .detail-pre {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 12px;
+        font-size: 0.79rem;
+        font-family: monospace;
+        color: #cdd0d8;
+        white-space: pre-wrap;
+        max-height: 200px;
+        overflow-y: auto;
+        line-height: 1.5;
+      }
+      .detail-icon-row {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        margin-bottom: 16px;
+      }
+      .detail-icon-img {
+        width: 64px;
+        height: 64px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        object-fit: cover;
+        background: var(--surface);
+      }
+      .detail-plugin-name {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        margin-bottom: 3px;
+      }
+      .detail-plugin-desc {
+        font-size: 0.84rem;
+        color: var(--muted);
+      }
+      .reject-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin-bottom: 6px;
+        display: block;
+      }
+      .reject-textarea {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 10px 12px;
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.86rem;
+        resize: vertical;
+        min-height: 110px;
+        outline: none;
+        transition: border-color 0.15s;
+        line-height: 1.5;
+      }
+      .reject-textarea::placeholder {
+        color: var(--muted);
+      }
+      .reject-textarea:focus {
+        border-color: var(--border2);
+      }
+      .reject-counter {
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-align: right;
+        margin-top: 4px;
+      }
+      .btn-approve {
+        background: rgba(129, 199, 132, 0.1);
+        border: 1px solid rgba(129, 199, 132, 0.28);
+        border-radius: 5px;
+        color: var(--accent2);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        padding: 8px 18px;
+        cursor: pointer;
+        transition: background 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .btn-approve:hover {
+        background: rgba(129, 199, 132, 0.2);
+      }
+      .btn-reject-confirm {
+        background: rgba(239, 83, 80, 0.1);
+        border: 1px solid rgba(239, 83, 80, 0.28);
+        border-radius: 5px;
+        color: var(--red);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        padding: 8px 18px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .btn-reject-confirm:hover {
+        background: rgba(239, 83, 80, 0.2);
+      }
+      .btn-cancel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        color: var(--muted);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 8px 18px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .btn-cancel:hover {
+        background: var(--surface2);
+        color: var(--text);
+      }
+      .btn-download {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        color: var(--muted);
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .btn-download:hover {
+        background: var(--surface2);
+        color: var(--text);
+      }
+      .access-denied-header {
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(239, 83, 80, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .access-denied-header i {
+        color: var(--red);
+        font-size: 1rem;
+      }
+      .access-denied-body {
+        padding: 18px;
+        font-size: 0.86rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .access-denied-body a {
+        color: var(--accent);
+      }
+      .toast-lcen {
+        position: fixed;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%) translateY(12px);
+        background: rgba(13, 16, 24, 0.95);
+        border: 1px solid var(--border2);
+        color: var(--text);
+        font-size: 0.84rem;
+        font-weight: 500;
+        padding: 9px 20px;
+        border-radius: 6px;
+        z-index: 600;
+        opacity: 0;
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+        pointer-events: none;
+        backdrop-filter: blur(8px);
+      }
+      .toast-lcen.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .toast-lcen.ok {
+        border-color: rgba(129, 199, 132, 0.4);
+        color: var(--accent2);
+      }
+      .toast-lcen.err {
+        border-color: rgba(239, 83, 80, 0.4);
+        color: var(--red);
+      }
+      .toast-lcen.info {
+        border-color: rgba(79, 195, 247, 0.3);
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panorama-wrap">
+      <div class="panorama-track" id="panoramaTrack">
+        <img
+          src="/assets/images/panorama.png"
+          alt=""
+          class="panorama-img"
+          id="panoImg1"
+        />
+        <img
+          src="/assets/images/panorama.png"
+          alt=""
+          class="panorama-img"
+          id="panoImg2"
+        />
+      </div>
+      <div class="panorama-overlay"></div>
+    </div>
+    <div class="toast-lcen" id="lcenToast"></div>
+
+    <div class="detail-overlay" id="detailOverlay">
+      <div class="modal-box detail-box">
+        <div class="modal-header">
+          <span class="modal-title">Submission Details</span>
+          <button class="modal-close" id="detailClose">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="detailBody">Loading…</div>
+        <div class="modal-footer" id="detailFooter"></div>
+      </div>
+    </div>
+
+    <div class="reject-overlay" id="rejectOverlay">
+      <div class="modal-box reject-box">
+        <div class="modal-header">
+          <span class="modal-title">Reject Submission</span>
+          <button class="modal-close" id="rejectClose">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p
+            style="
+              font-size: 0.84rem;
+              color: var(--muted);
+              margin-bottom: 14px;
+              line-height: 1.5;
+            "
+          >
+            Provide a clear reason so the author knows what to fix.
+          </p>
+          <label class="reject-label">Rejection Reason</label>
+          <textarea
+            class="reject-textarea"
+            id="rejectReason"
+            maxlength="500"
+            placeholder="e.g. Source code does not match submitted .dll, missing GitHub link, plugin crashes on load…"
+          ></textarea>
+          <div class="reject-counter" id="rejectCounter">0 / 500</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" id="rejectCancel">Cancel</button>
+          <button class="btn-reject-confirm" id="rejectConfirm">
+            Reject Submission
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="access-overlay" id="accessOverlay">
+      <div class="modal-box access-box">
+        <div class="access-denied-header">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span class="modal-title">Access Denied</span>
+        </div>
+        <div class="access-denied-body">
+          <p>This page is restricted to LCE Network administrators.</p>
+          <p style="margin-top: 10px"><a href="/">Go back home</a></p>
+        </div>
+      </div>
+    </div>
+
+    <nav>
+      <a class="nav-logo" href="/">
+        <img src="/assets/logo.png" alt="LCEN" />
+        <span class="nav-logo-text">LCE Network</span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/plugin/" class="nav-link">Plugins</a>
+        <a href="/servers/" class="nav-link">Servers</a>
+        <a href="/leaderboards/" class="nav-link">Leaderboards</a>
+        <a href="/dashboard/" class="nav-link">Dashboard</a>
+      </div>
+      <div class="nav-user" id="navUser" style="display: none">
+        <div class="nav-avatar"><img src="" alt="" id="navAvatarImg" /></div>
+        <div>
+          <div class="nav-gamertag" id="navGamertag"></div>
+          <div class="nav-gs" id="navGs"></div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="page">
+      <div class="wrap">
+        <div class="page-header">
+          <div>
+            <div class="page-title">
+              Moderation <span class="admin-badge">Admin Only</span>
+            </div>
+            <div class="page-subtitle">
+              Review plugin submissions and manage the library
+            </div>
+          </div>
+          <button class="btn-refresh" id="refreshBtn">
+            <i class="fa-solid fa-rotate-right"></i> Refresh
+          </button>
+        </div>
+
+        <div class="stats-strip">
+          <div class="stat-tile">
+            <div class="stat-icon pending">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div>
+              <div class="stat-val" id="statPending">—</div>
+              <div class="stat-lbl">Pending Review</div>
+            </div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-icon approved">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+              <div class="stat-val" id="statApproved">—</div>
+              <div class="stat-lbl">Approved</div>
+            </div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-icon rejected">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </div>
+            <div>
+              <div class="stat-val" id="statRejected">—</div>
+              <div class="stat-lbl">Rejected</div>
+            </div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-icon total">
+              <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <div>
+              <div class="stat-val" id="statTotal">—</div>
+              <div class="stat-lbl">Total</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="layout">
+          <div class="panel">
+            <div class="sidebar-section-lbl">Filter by Status</div>
+            <ul class="filter-nav" id="filterNav">
+              <li>
+                <div class="filter-link active f-pending" data-status="pending">
+                  <i class="fa-solid fa-clock" style="font-size: 0.75rem"></i>
+                  Pending <span class="filter-count" id="fc-pending">—</span>
+                </div>
+              </li>
+              <li>
+                <div class="filter-link f-approved" data-status="approved">
+                  <i
+                    class="fa-solid fa-circle-check"
+                    style="font-size: 0.75rem"
+                  ></i>
+                  Approved <span class="filter-count" id="fc-approved">—</span>
+                </div>
+              </li>
+              <li>
+                <div class="filter-link f-rejected" data-status="rejected">
+                  <i
+                    class="fa-solid fa-circle-xmark"
+                    style="font-size: 0.75rem"
+                  ></i>
+                  Rejected <span class="filter-count" id="fc-rejected">—</span>
+                </div>
+              </li>
+              <li>
+                <div class="filter-link" data-status="">
+                  <i
+                    class="fa-solid fa-layer-group"
+                    style="font-size: 0.75rem"
+                  ></i>
+                  All <span class="filter-count" id="fc-all">—</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="panel">
+            <div class="content-header">
+              <div>
+                <div class="content-title" id="contentTitle">
+                  Plugin Submissions
+                </div>
+                <div class="content-sub" id="contentSub">Loading…</div>
+              </div>
+            </div>
+            <div id="subList"><div class="list-empty">Loading…</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API = "https://network-server-7kuc.onrender.com";
+      function token() {
+        return localStorage.getItem("lcen_token");
+      }
+      function profile() {
+        try {
+          return JSON.parse(localStorage.getItem("lcen_profile"));
+        } catch {
+          return null;
+        }
+      }
+      function avatarUrl(xuid) {
+        return `${API}/avatar/${xuid}`;
+      }
+      function authHeader() {
+        return { Authorization: `Bearer ${token()}` };
+      }
+      function esc(s) {
+        return String(s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+      function fmtDate(ts) {
+        if (!ts) return "—";
+        return new Date(ts).toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        });
+      }
+      function fmtBytes(b) {
+        if (!b) return "?";
+        if (b < 1024) return b + " B";
+        if (b < 1048576) return (b / 1024).toFixed(1) + " KB";
+        return (b / 1048576).toFixed(1) + " MB";
+      }
+
+      function showToast(msg, type) {
+        const t = document.getElementById("lcenToast");
+        t.textContent = msg;
+        t.className =
+          "toast-lcen show" +
+          (type === "error"
+            ? " err"
+            : type === "success"
+              ? " ok"
+              : type === "info"
+                ? " info"
+                : "");
+        clearTimeout(t._to);
+        t._to = setTimeout(() => {
+          t.classList.remove("show", "ok", "err", "info");
+        }, 3200);
+      }
+
+      let currentStatus = "pending";
+      let pendingSubId = null;
+
+      async function checkAccess() {
+        const p = profile();
+        if (!p || !token()) {
+          location.href = "/login/";
+          return false;
+        }
+        try {
+          const res = await fetch(`${API}/me`, { headers: authHeader() });
+          if (!res.ok) {
+            location.href = "/login/";
+            return false;
+          }
+          const me = await res.json();
+          if (!me.isAdmin && me.role !== "admin" && me.role !== "moderator") {
+            document.getElementById("accessOverlay").classList.add("open");
+            return false;
+          }
+          return true;
+        } catch {
+          location.href = "/login/";
+          return false;
+        }
+      }
+
+      async function fetchSubs(status) {
+        const list = document.getElementById("subList");
+        list.innerHTML = `<div class="list-empty">Loading…</div>`;
+        const titles = {
+          pending: "Pending Review",
+          approved: "Approved Plugins",
+          rejected: "Rejected Submissions",
+          "": "All Submissions",
+        };
+        document.getElementById("contentTitle").textContent =
+          titles[status] || "All Submissions";
+
+        try {
+          const url = status
+            ? `${API}/plugins/submissions?status=${encodeURIComponent(status)}`
+            : `${API}/plugins/submissions`;
+          const res = await fetch(url, { headers: authHeader() });
+
+          if (res.status === 401 || res.status === 403) {
+            document.getElementById("accessOverlay").classList.add("open");
+            return;
+          }
+          if (!res.ok) throw new Error();
+
+          const subs = await res.json();
+          document.getElementById("contentSub").textContent =
+            `${subs.length} submission${subs.length !== 1 ? "s" : ""}`;
+
+          if (!subs.length) {
+            list.innerHTML = `<div class="list-empty">No ${status || ""} submissions.</div>`;
+            return;
+          }
+
+          list.innerHTML = "";
+          subs.forEach((s) => {
+            const id = s._id;
+            const statusCls =
+              s.status === "approved"
+                ? "approved"
+                : s.status === "rejected"
+                  ? "rejected"
+                  : "pending";
+            const card = document.createElement("div");
+            card.className = "sub-card";
+            card.innerHTML = `
+        <div class="sub-status-bar ${statusCls}"></div>
+        <div class="sub-icon">
+          <img src="" alt="">
+        </div>
+        <div class="sub-main">
+          <div class="sub-name">${esc(s.name || "Untitled")}</div>
+          ${s.short_description ? `<div class="sub-desc">${esc(s.short_description)}</div>` : ""}
+          <div class="sub-meta">
+            <span class="sub-badge ${statusCls}">${s.status || "pending"}</span>
+            <span class="sub-meta-item"><i class="fa-solid fa-user"></i>${esc(s.ownerGamertag || "—")}</span>
+            <span class="sub-meta-item"><i class="fa-regular fa-calendar"></i>${fmtDate(s.submitted_at)}</span>
+            ${s.category ? `<span class="sub-meta-item"><i class="fa-solid fa-tag"></i>${esc(s.category)}</span>` : ""}
+            ${s.file_size ? `<span class="sub-meta-item"><i class="fa-solid fa-file"></i>${fmtBytes(s.file_size)}</span>` : ""}
+          </div>
+        </div>
+        <div class="sub-actions">
+          <button class="action-btn detail js-detail" data-id="${id}">
+            <i class="fa-solid fa-eye" style="font-size:.75rem"></i> Details
+          </button>
+          ${
+            s.status === "pending"
+              ? `
+            <button class="action-btn approve js-approve" data-id="${id}">
+              <i class="fa-solid fa-check" style="font-size:.75rem"></i> Approve
+            </button>
+            <button class="action-btn reject js-reject" data-id="${id}">
+              <i class="fa-solid fa-xmark" style="font-size:.75rem"></i> Reject
+            </button>`
+              : ""
+          }
+        </div>`;
+            list.appendChild(card);
+
+            const iconImg = card.querySelector(".sub-icon img");
+            fetch(`${API}/plugins/submissions/${id}/icon`, {
+              headers: authHeader(),
+            })
+              .then((r) => (r.ok ? r.blob() : null))
+              .then((b) => {
+                if (b) iconImg.src = URL.createObjectURL(b);
+              })
+              .catch(() => {});
+          });
+
+          list.addEventListener("click", (e) => {
+            const detail = e.target.closest(".js-detail");
+            const approve = e.target.closest(".js-approve");
+            const reject = e.target.closest(".js-reject");
+            if (detail) openDetail(detail.dataset.id);
+            if (approve) doApprove(approve.dataset.id);
+            if (reject) openReject(reject.dataset.id);
+          });
+        } catch {
+          list.innerHTML = `<div class="list-empty">Failed to load submissions.</div>`;
+        }
+      }
+
+      async function doApprove(id) {
+        try {
+          const res = await fetch(`${API}/plugins/submissions/${id}/approve`, {
+            method: "POST",
+            headers: authHeader(),
+          });
+          if (res.status === 401 || res.status === 403) {
+            document.getElementById("accessOverlay").classList.add("open");
+            return;
+          }
+          if (!res.ok) {
+            const d = await res.json().catch(() => ({}));
+            showToast(d.error || "Approval failed", "error");
+            return;
+          }
+          showToast("Plugin approved and published.", "success");
+          fetchSubs(currentStatus);
+        } catch {
+          showToast("Network error", "error");
+        }
+      }
+
+      function openReject(id) {
+        pendingSubId = id;
+        document.getElementById("rejectReason").value = "";
+        document.getElementById("rejectCounter").textContent = "0 / 500";
+        document.getElementById("rejectConfirm").disabled = false;
+        document.getElementById("rejectConfirm").textContent =
+          "Reject Submission";
+        document.getElementById("rejectOverlay").classList.add("open");
+      }
+
+      async function submitRejection() {
+        const reason = document.getElementById("rejectReason").value.trim();
+        if (!reason) {
+          showToast("Please enter a rejection reason", "error");
+          return;
+        }
+        const btn = document.getElementById("rejectConfirm");
+        btn.disabled = true;
+        btn.textContent = "Rejecting…";
+        try {
+          const res = await fetch(
+            `${API}/plugins/submissions/${pendingSubId}/reject`,
+            {
+              method: "POST",
+              headers: { ...authHeader(), "Content-Type": "application/json" },
+              body: JSON.stringify({ reason }),
+            },
+          );
+          if (res.status === 401 || res.status === 403) {
+            document.getElementById("accessOverlay").classList.add("open");
+            closeReject();
+            return;
+          }
+          if (!res.ok) {
+            const d = await res.json().catch(() => ({}));
+            showToast(d.error || "Reject failed", "error");
+            btn.disabled = false;
+            btn.textContent = "Reject Submission";
+            return;
+          }
+          showToast("Submission rejected.", "info");
+          closeReject();
+          fetchSubs(currentStatus);
+        } catch {
+          showToast("Network error", "error");
+          btn.disabled = false;
+          btn.textContent = "Reject Submission";
+        }
+      }
+
+      function closeReject() {
+        document.getElementById("rejectOverlay").classList.remove("open");
+        pendingSubId = null;
+      }
+
+      async function openDetail(id) {
+        document.getElementById("detailBody").innerHTML =
+          "<div style='color:var(--muted);text-align:center;padding:28px'>Loading…</div>";
+        const iconImg = document
+          .getElementById("detailBody")
+          .querySelector(".detail-icon-img");
+        fetch(`${API}/plugins/submissions/${id}/icon`, {
+          headers: authHeader(),
+        })
+          .then((r) => (r.ok ? r.blob() : null))
+          .then((b) => {
+            if (b) iconImg.src = URL.createObjectURL(b);
+          })
+          .catch(() => {});
+        document.getElementById("detailFooter").innerHTML = "";
+        document.getElementById("detailOverlay").classList.add("open");
+        try {
+          const res = await fetch(`${API}/plugins/submissions/${id}`, {
+            headers: authHeader(),
+          });
+          const s = await res.json();
+          const statusCls =
+            s.status === "approved"
+              ? "approved"
+              : s.status === "rejected"
+                ? "rejected"
+                : "pending";
+          const md = (text) =>
+            String(text || "")
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
+              .replace(/\*(.*?)\*/g, "<i>$1</i>")
+              .replace(
+                /`(.*?)`/g,
+                "<code style='background:rgba(255,255,255,.07);padding:1px 4px;border-radius:3px;font-size:.88em'>$1</code>",
+              )
+              .replace(/\n/g, "<br>");
+
+          document.getElementById("detailBody").innerHTML = `
+      <div class="detail-icon-row">
+        <img class="detail-icon-img" src="" alt="">
+        <div>
+          <div class="detail-plugin-name">${esc(s.name || "Untitled")}</div>
+          <div class="detail-plugin-desc">${esc(s.short_description || "No short description")}</div>
+          <div style="margin-top:7px"><span class="sub-badge ${statusCls}">${s.status || "pending"}</span></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Details</div>
+        <div class="detail-grid">
+          <div class="detail-value"><span style="color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em">Author</span><br>${esc(s.ownerGamertag || "—")}</div>
+          <div class="detail-value"><span style="color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em">Category</span><br>${esc(s.category || "—")}</div>
+          <div class="detail-value"><span style="color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em">Platform</span><br>${esc(s.game_version || "—")}</div>
+          <div class="detail-value"><span style="color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em">File</span><br>${esc(s.file_name || "—")} ${s.file_size ? `<span style="color:var(--muted);font-size:.78rem">(${fmtBytes(s.file_size)})</span>` : ""}</div>
+        </div>
+      </div>
+      ${s.github_url ? `<div class="detail-section"><div class="detail-label">GitHub</div><div class="detail-value"><a href="${esc(s.github_url)}" target="_blank">${esc(s.github_url)}</a></div></div>` : ""}
+      <div class="detail-section">
+        <div class="detail-label">Description</div>
+        <div class="detail-pre">${md(s.description || "No description")}</div>
+      </div>
+      ${s.status === "rejected" && s.rejection_reason ? `<div class="detail-section"><div class="detail-label">Rejection Reason</div><div style="padding:10px 12px;background:rgba(239,83,80,.06);border:1px solid rgba(239,83,80,.15);border-radius:5px;font-size:.82rem;color:#e07070">${esc(s.rejection_reason)}</div></div>` : ""}`;
+
+          const footer = document.getElementById("detailFooter");
+          footer.innerHTML = "";
+
+          const dl = document.createElement("a");
+          dl.href = `${API}/plugins/submissions/${id}/download`;
+          dl.target = "_blank";
+          dl.className = "btn-download";
+          dl.innerHTML = `<i class="fa-solid fa-download"></i> Download .dll`;
+          footer.appendChild(dl);
+
+          if (s.status === "pending") {
+            const appBtn = document.createElement("button");
+            appBtn.className = "btn-approve";
+            appBtn.innerHTML = `<i class="fa-solid fa-check"></i> Approve`;
+            appBtn.addEventListener("click", () => {
+              closeDetail();
+              doApprove(id);
+            });
+            footer.appendChild(appBtn);
+
+            const rejBtn = document.createElement("button");
+            rejBtn.className = "btn-reject-confirm";
+            rejBtn.textContent = "Reject";
+            rejBtn.addEventListener("click", () => {
+              closeDetail();
+              openReject(id);
+            });
+            footer.appendChild(rejBtn);
+          }
+
+          const closeBtn = document.createElement("button");
+          closeBtn.className = "btn-cancel";
+          closeBtn.textContent = "Close";
+          closeBtn.addEventListener("click", closeDetail);
+          footer.appendChild(closeBtn);
+        } catch {
+          document.getElementById("detailBody").innerHTML =
+            "<div style='color:var(--red);text-align:center;padding:28px'>Failed to load details.</div>";
+        }
+      }
+
+      function closeDetail() {
+        document.getElementById("detailOverlay").classList.remove("open");
+      }
+
+      document
+        .getElementById("rejectConfirm")
+        .addEventListener("click", submitRejection);
+      document
+        .getElementById("rejectCancel")
+        .addEventListener("click", closeReject);
+      document
+        .getElementById("rejectClose")
+        .addEventListener("click", closeReject);
+      document
+        .getElementById("detailClose")
+        .addEventListener("click", closeDetail);
+      document
+        .getElementById("detailOverlay")
+        .addEventListener("click", (e) => {
+          if (e.target.id === "detailOverlay") closeDetail();
+        });
+      document
+        .getElementById("rejectOverlay")
+        .addEventListener("click", (e) => {
+          if (e.target.id === "rejectOverlay") closeReject();
+        });
+      document
+        .getElementById("rejectReason")
+        .addEventListener("input", function () {
+          document.getElementById("rejectCounter").textContent =
+            `${this.value.length} / 500`;
+        });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeDetail();
+          closeReject();
+        }
+      });
+      document
+        .getElementById("refreshBtn")
+        .addEventListener("click", () => fetchSubs(currentStatus));
+
+      document.querySelectorAll(".filter-link").forEach((link) => {
+        link.addEventListener("click", () => {
+          document
+            .querySelectorAll(".filter-link")
+            .forEach((l) => l.classList.remove("active"));
+          link.classList.add("active");
+          currentStatus = link.dataset.status;
+          fetchSubs(currentStatus);
+        });
+      });
+
+      (async () => {
+        const p = profile();
+        if (!p || !token()) {
+          location.href = "/login/";
+          return;
+        }
+        document.getElementById("navUser").style.display = "";
+        document.getElementById("navAvatarImg").src = avatarUrl(p.xuid);
+        document.getElementById("navGamertag").textContent = p.gamertag;
+        document.getElementById("navGs").textContent = `${p.gamerscore || 0} G`;
+
+        const ok = await checkAccess();
+        if (!ok) return;
+
+        try {
+          const res = await fetch(`${API}/plugins/submissions`, {
+            headers: authHeader(),
+          });
+          if (res.ok) {
+            const all = await res.json();
+            const cnt = { pending: 0, approved: 0, rejected: 0 };
+            all.forEach((s) => {
+              if (cnt[s.status] !== undefined) cnt[s.status]++;
+            });
+            document.getElementById("statPending").textContent = cnt.pending;
+            document.getElementById("statApproved").textContent = cnt.approved;
+            document.getElementById("statRejected").textContent = cnt.rejected;
+            document.getElementById("statTotal").textContent = all.length;
+            document.getElementById("fc-pending").textContent = cnt.pending;
+            document.getElementById("fc-approved").textContent = cnt.approved;
+            document.getElementById("fc-rejected").textContent = cnt.rejected;
+            document.getElementById("fc-all").textContent = all.length;
+          }
+        } catch {}
+
+        fetchSubs("pending");
+      })();
+
+      (() => {
+        const img1 = document.getElementById("panoImg1");
+        const track = document.getElementById("panoramaTrack");
+        function onLoad() {
+          const displayH = window.innerHeight;
+          const displayW = Math.ceil(
+            img1.naturalWidth * (displayH / img1.naturalHeight),
+          );
+          img1.style.width = displayW + "px";
+          img1.style.minWidth = "unset";
+          document.getElementById("panoImg2").style.width = displayW + "px";
+          document.getElementById("panoImg2").style.minWidth = "unset";
+          const style = document.createElement("style");
+          style.textContent = `@keyframes pan{0%{transform:translateX(0);}100%{transform:translateX(-${displayW}px);}}`;
+          document.head.appendChild(style);
+          track.style.animation = `pan ${displayW / 40}s linear infinite`;
+        }
+        img1.complete ? onLoad() : img1.addEventListener("load", onLoad);
+      })();
+    </script>
+  </body>
+</html>

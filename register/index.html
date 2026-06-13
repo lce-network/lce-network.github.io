@@ -3,29 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Register | LCE Network</title>
+<title>LCE Network | Register</title>
 <link rel="stylesheet" href="/assets/style.css">
 <link rel="icon" href="/assets/logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
 </head>
 <body>
 <div class="bg-blur-layer"></div>
-
 <nav>
   <a href="/" class="nav-logo">
     <img src="/assets/logo.png" alt="LCEN">
     <span class="nav-logo-text">LCE Network</span>
   </a>
   <div class="nav-links">
-    <a href="/" class="nav-link active">Home</a>
+    <a href="/" class="nav-link">Home</a>
     <a href="/download/" class="nav-link">Download</a>
-    <a href="/profile/" class="nav-link">Profile</a>
-    <a href="/friends/" class="nav-link">Friends</a>
+    <a href="/plugin/" class="nav-link">Plugins</a>
+    <a href="/servers/" class="nav-link">Servers</a>
+    <a href="/leaderboards/" class="nav-link">Leaderboards</a>
+    <a href="/dashboard/" class="nav-link"><i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Dashboard</a>
   </div>
   <div class="nav-actions"></div>
 </nav>
 
-
-<div class="auth-page">
 <div class="auth-page">
   <div class="auth-card">
     <div class="auth-header">
@@ -64,11 +64,11 @@
     </div>
   </div>
 </div>
-</div>
-
-
 
 <script src="/assets/app.js"></script>
-<script>LCEN.initRegister();</script>
+<script>
+  LCEN.initRegister();
+  LCEN.buildNav();
+</script>
 </body>
 </html>

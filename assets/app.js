@@ -1,20 +1,59 @@
 const API = "https://network-server-7kuc.onrender.com";
 
 const SLIDES = [
-  {
-    title: "OpenLCE",
-    badge: "Recommend Console Version",
-    desc: "The in progress stabilizing build of Minecraft: Legacy Console Edition. Fully connected to LCEN Authentication and secure.",
-    bg: "linear-gradient(135deg, #0a1628 0%, #0d2d6b 100%)",
+    {
+    title: "LCE Network",
+    badge: "Official",
+    desc: "Kowhaifan's Clubhouse is a legacy console edition server. We are proud to be the oldest running LCE server and the very first to successfully implement a proper, secure authentication system for our community.",
+    bg: "linear-gradient(135deg, #58caff 0%, #0d1b6b 100%)",
     accent: "#0070d1",
     label: "Game",
     image: "/assets/images/ps3.png",
+    logo: "/assets/images/LCE.png",
     buttons: [
-      { text: "Download", type: "primary", href: "/download/" },
+      { text: '<i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Play Now!', type: "primary", href: "https://discord.com/invite/FzZ2AFnw6Z", target: "external" },
       {
-        text: "Learn More",
+        text: "Visit Website",
         type: "secondary",
-        href: "/about/openlce/",
+        href: "https://kowhaifan.net",
+        target: "external",
+      },
+    ],
+  },
+  {
+    title: "Kowhaifan's Clubhouse",
+    badge: "Partnered Server",
+    desc: "Kowhaifan's Clubhouse is a legacy console edition server. We are proud to be the oldest running LCE server and the very first to successfully implement a proper, secure authentication system for our community.",
+    bg: "linear-gradient(135deg, #ffe058 0%, #6b650d 100%)",
+    accent: "#0070d1",
+    label: "Game",
+    image: "/assets/images/CroplicousQHD.png",
+    logo: "/assets/images/kowhaifanclubhouse.png",
+    buttons: [
+      { text: '<i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Play Now!', type: "primary", href: "https://discord.com/invite/FzZ2AFnw6Z", target: "external" },
+      {
+        text: "Visit Website",
+        type: "secondary",
+        href: "https://kowhaifan.net",
+        target: "external",
+      },
+    ],
+  },
+    {
+    title: "Blue's SMP",
+    badge: "Partnered Server",
+    desc: "Second oldest LCE server! We have our own authentication system and a laid-back community of players who love Minecraft: Legacy Console Edition. Whether you're looking to build, survive, or just hang out with other LCE players, you're welcome to join us.",
+    bg: "linear-gradient(135deg, #5871ff 0%, #0d656b 100%)",
+    accent: "#0070d1",
+    label: "Game",
+    image: "/assets/images/bluessmp-bg.png",
+    logo: "/assets/images/logoblue.png",
+    buttons: [
+      { text: '<i style="margin-right: 7px;" class="fa-solid fa-arrow-up-right-from-square"></i>Join Discord', type: "primary", href: "https://discord.gg/x4BuDfpgsE", target: "external" },
+      {
+        text: "Visit Website",
+        type: "secondary",
+        href: "https://blues-smp.github.io",
         target: "external",
       },
     ],
@@ -37,29 +76,32 @@ const SLIDES = [
       { text: "Docs", type: "secondary", href: "/docs/launcher/" },
     ],
   },
-  {
-    title: "ByteBukkit",
-    badge: "Hosting Platform",
-    desc: "Host FourKit Plugins, download DLC directly online, and view active servers instantly in your browser!",
-    bg: "linear-gradient(135deg, #574bff 0%, #0077ff 100%)",
-    accent: "#ffffff",
-    label: "Host",
-    image: "/assets/images/panorama.png",
-    buttons: [
-      { text: "Open Platform", type: "primary", href: "/bytebukkit/" },
-      { text: "API Docs", type: "secondary", href: "/docs/bytebukkit" },
-    ],
-  },
 ];
 
 const NEWS = [
   {
-    tag: "Launch",
-    title: "LCE Network Development Started",
-    date: "May 25, 2026",
-    featured: true,
-    image: "/assets/images/network.png",
+    tag: "Partnership",
+    title: "Continuing partnership with LCE Emerald Launcher",
+    date: "Jun 10, 2026",
+    featured: false,
+    image: "/assets/images/emerald.png",
   },
+  {
+    tag: "Partnership",
+    title: "Partnering with Blue's SMP",
+    date: "Jun 10, 2026",
+    featured: false,
+    image: "/assets/images/bluessmp-bg.png",
+    desc: "",
+  },
+  {
+    tag: "Partnership",
+    title: "Partnering with Kowhaifan's Clubhouse",
+    date: "Jun 8, 2026",
+    featured: false,
+    image: "/assets/images/CroplicousQHD.png",
+  },
+  
 ];
 
 const VERSIONS = [];
@@ -111,6 +153,203 @@ function showToast(msg, duration = 3000) {
   setTimeout(() => t.classList.remove("show"), duration);
 }
 
+function avatarUrlFor(profileLike) {
+  if (profileLike?.avatar) return profileLike.avatar;
+  if (profileLike?.xuid) return `${API}/avatar/${profileLike.xuid}`;
+  const seed = profileLike?.gamertag || "player";
+  return `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(seed)}`;
+}
+
+/* ===== Nav Search Dropdown ===== */
+let searchDebounce = null;
+let searchAbort = null;
+
+function buildSearchDropdown(actionsEl) {
+  const wrap = document.createElement("div");
+  wrap.className = "nav-search-wrap";
+
+  const search = document.createElement("div");
+  search.className = "nav-search";
+  search.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search players..." id="nav-search-input" autocomplete="off">`;
+
+  const results = document.createElement("div");
+  results.className = "search-results";
+  results.id = "nav-search-results";
+
+  wrap.appendChild(search);
+  wrap.appendChild(results);
+  actionsEl.appendChild(wrap);
+
+  const input = search.querySelector("input");
+
+  input.addEventListener("input", (e) => {
+    const q = e.target.value.trim();
+    clearTimeout(searchDebounce);
+    if (!q) {
+      results.classList.remove("show");
+      results.innerHTML = "";
+      return;
+    }
+    searchDebounce = setTimeout(() => runPlayerSearch(q, results), 250);
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const q = e.target.value.trim();
+      if (q) window.location.href = `/profile/?q=${encodeURIComponent(q)}`;
+    }
+    if (e.key === "Escape") {
+      results.classList.remove("show");
+      input.blur();
+    }
+  });
+
+  input.addEventListener("focus", () => {
+    if (results.innerHTML.trim()) results.classList.add("show");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!wrap.contains(e.target)) {
+      results.classList.remove("show");
+    }
+  });
+}
+
+async function runPlayerSearch(query, resultsEl) {
+  resultsEl.innerHTML = `<div class="search-results-loading">Searching...</div>`;
+  resultsEl.classList.add("show");
+
+  if (searchAbort) searchAbort.abort();
+  searchAbort = new AbortController();
+
+  try {
+    let players = [];
+    try {
+      const data = await apiFetch(
+        `/players/search?q=${encodeURIComponent(query)}&scope=all`,
+        { signal: searchAbort.signal },
+      );
+      players = Array.isArray(data) ? data : data.results || [];
+    } catch {
+      players = [];
+    }
+
+    renderSearchResults(players, query, resultsEl);
+  } catch (err) {
+    if (err.name === "AbortError") return;
+    resultsEl.innerHTML = `<div class="search-results-empty">No results found.</div>`;
+  }
+}
+
+function renderSearchResults(players, query, resultsEl) {
+  if (!players || players.length === 0) {
+    resultsEl.innerHTML = `
+      <div class="search-results-empty">No players found for "${query}".</div>
+      <div class="search-results-footer" id="search-view-all">View full search</div>`;
+  } else {
+    resultsEl.innerHTML = players
+      .slice(0, 6)
+      .map((p) => {
+        const avatar = avatarUrlFor(p);
+        return `
+        <div class="search-result-item" data-gamertag="${p.gamertag}">
+          <img src="${avatar}" alt="${p.gamertag}" onerror="this.style.visibility='hidden'">
+          <div class="search-result-info">
+            <div class="search-result-name">${p.gamertag}</div>
+            <div class="search-result-meta">${p.gamerscore ?? 0} G</div>
+          </div>
+        </div>`;
+      })
+      .join("") + `<div class="search-results-footer" id="search-view-all">View full search</div>`;
+
+    resultsEl.querySelectorAll(".search-result-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const tag = item.dataset.gamertag;
+        window.location.href = `/profile/?q=${encodeURIComponent(tag)}`;
+      });
+    });
+  }
+
+  const viewAll = resultsEl.querySelector("#search-view-all");
+  if (viewAll) {
+    viewAll.addEventListener("click", () => {
+      window.location.href = `/profile/?q=${encodeURIComponent(query)}`;
+    });
+  }
+}
+
+/* ===== Nav User Menu ===== */
+function buildUserMenu(actionsEl, profile) {
+  const wrap = document.createElement("div");
+  wrap.className = "nav-user";
+
+  const trigger = document.createElement("button");
+  trigger.className = "nav-user-trigger";
+  trigger.innerHTML = `
+    <img src="${avatarUrlFor(profile)}" alt="${profile.gamertag}" onerror="this.style.visibility='hidden'">
+    <span>${profile.gamertag}</span>
+    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>`;
+
+  const menu = document.createElement("div");
+  menu.className = "nav-user-menu";
+  menu.innerHTML = `
+    <div class="nav-user-menu-header">
+      <img src="${avatarUrlFor(profile)}" alt="${profile.gamertag}" onerror="this.style.visibility='hidden'">
+      <div>
+        <div class="nav-user-menu-name">${profile.gamertag}</div>
+        <div class="nav-user-menu-sub">${profile.gamerscore ?? 0} G</div>
+      </div>
+    </div>
+    <div class="nav-user-menu-links">
+      <a href="/profile/" class="nav-user-menu-link">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        My Profile
+      </a>
+      <a href="/dashboard/" class="nav-user-menu-link">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Dashboard
+      </a>
+      <a href="/friends/" class="nav-user-menu-link">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Friends
+      </a>
+      <a href="/messages/" class="nav-user-menu-link">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Messages
+      </a>
+      <a href="/plugin/manage" class="nav-user-menu-link">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+        Manage Plugins
+      </a>
+      <div class="nav-user-menu-divider"></div>
+      <a href="#" class="nav-user-menu-link danger" id="nav-sign-out">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        Sign Out
+      </a>
+    </div>`;
+
+  wrap.appendChild(trigger);
+  wrap.appendChild(menu);
+  actionsEl.appendChild(wrap);
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    wrap.classList.toggle("open");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!wrap.contains(e.target)) {
+      wrap.classList.remove("open");
+    }
+  });
+
+  menu.querySelector("#nav-sign-out").addEventListener("click", (e) => {
+    e.preventDefault();
+    clearToken();
+    location.reload();
+  });
+}
+
 function buildNav() {
   const nav = document.querySelector("nav");
   if (!nav) return;
@@ -119,34 +358,10 @@ function buildNav() {
   if (!actionsEl) return;
   actionsEl.innerHTML = "";
 
-  const search = document.createElement("div");
-  search.className = "nav-search";
-  search.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search players..." id="nav-search-input">`;
-  actionsEl.appendChild(search);
-
-  search.querySelector("input").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      const q = e.target.value.trim();
-      if (q) window.location.href = `/profile/?q=${encodeURIComponent(q)}`;
-    }
-  });
+  buildSearchDropdown(actionsEl);
 
   if (profile) {
-    const a = document.createElement("a");
-    a.href = "/dashboard/";
-    a.className = "btn btn-ghost";
-    a.textContent = profile.gamertag;
-    actionsEl.appendChild(a);
-    const out = document.createElement("button");
-    out.className = "btn btn-secondary";
-    out.style.cssText =
-      "background:var(--surface2);color:var(--text);border:1.5px solid var(--border);min-width:unset;padding:10px 18px;";
-    out.textContent = "Sign Out";
-    out.onclick = () => {
-      clearToken();
-      location.reload();
-    };
-    actionsEl.appendChild(out);
+    buildUserMenu(actionsEl, profile);
   } else {
     const loginBtn = document.createElement("a");
     loginBtn.href = "/login/";
@@ -180,7 +395,13 @@ function buildHero() {
       <div class="hero-overlay"></div>
       <div class="hero-content">
         <span class="hero-badge">${s.badge}</span>
-        <h1 class="hero-title">${s.title}</h1>
+        ${
+  s.logo
+    ? `<div class="hero-logo-wrap">
+         <img src="${s.logo}" alt="${s.title}" class="hero-logo">
+       </div>`
+    : `<h1 class="hero-title">${s.title}</h1>`
+}
         <p class="hero-desc">${s.desc}</p>
         <div class="hero-actions">
           ${s.buttons
@@ -277,14 +498,15 @@ function buildNews() {
   if (!grid) return;
   NEWS.forEach((n, i) => {
     const card = document.createElement("div");
-    card.className = "news-card" + (i === 0 ? " featured" : "");
+    card.className = "news-card" + (n.featured ? " featured" : "");
     card.innerHTML = `
-      <div class="news-img" style="height:${i === 0 ? "180px" : "110px"}">
+      <div class="news-img">
         ${n.image ? `<img src="${n.image}" alt="${n.title}" class="news-image">` : ""}
       </div>
       <div class="news-body">
         <div class="news-tag">${n.tag}</div>
         <div class="news-title">${n.title}</div>
+        ${n.featured && n.desc ? `<div class="news-desc">${n.desc}</div>` : ""}
         <div class="news-date">${n.date}</div>
       </div>`;
     grid.appendChild(card);
